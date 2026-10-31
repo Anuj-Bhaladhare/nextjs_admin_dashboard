@@ -1,0 +1,19 @@
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+
+export const metadata: Metadata = {
+  title: "Sign in | Smart Gate Monitoring",
+  description: "Sign in to your Smart Gate Monitoring workspace.",
+};
+
+interface LoginLayoutProps {
+  children: ReactNode
+}
+
+const LoginLayout = ({ children }: LoginLayoutProps) => {
+  return (
+    <div> { children } </div>
+  );
+}
+
+export default LoginLayout;

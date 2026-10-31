@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///home/anuj-kumar/projects_workspace/NextjsAdminDashboard/nextjs_admin_dashboard/src/app/(auth)/register/layout.tsx"],"sourcesContent":["import type { Metadata } from \"next\";\nimport type { ReactNode } from \"react\";\n\nexport const metadata: Metadata = {\n  title: \"Create account | Smart Gate Monitoring\",\n  description: \"Create an account for Smart Gate Monitoring.\",\n};\n\ninterface RegisterLayoutProps {\n  children: ReactNode\n}\n\nconst RegisterLayout = ({ children }: RegisterLayoutProps) => {\n  return (\n    <div> { children } </div>\n  );\n}\n\nexport default RegisterLayout;\n"],"names":["metadata","title","description","RegisterLayout","children"],"mappings":";;;;;;;;AAGO,MAAMA,WAAqB;IAChCC,OAAO;IACPC,aAAa;AACf;AAMA,MAAMC,iBAAiB,CAAC,EAAEC,QAAQ,EAAuB;IACvD,qBACE,8OAAC;;YAAI;YAAGA;YAAU;;;;;;;AAEtB;uCAEeD"}}]
+}
