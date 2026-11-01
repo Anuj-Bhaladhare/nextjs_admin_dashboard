@@ -6,14 +6,14 @@ export const metadata: Metadata = {
   description: "Sign in to your Smart Gate Monitoring workspace.",
 };
 
-interface LoginLayoutProps {
+interface DashboardLayoutProps {
   children: ReactNode
 }
 
-const LoginLayout = ({ children }: LoginLayoutProps) => {
+const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <div> { children } </div>
   );
 }
 
-export default LoginLayout;
+export default DashboardLayout;
