@@ -1,0 +1,243 @@
+
+nextjs_admin_dashboard/
+│
+├── public/
+│   ├── images/
+│   ├── icons/
+│   └── assets/
+│
+├── docs/
+│   ├── api/
+│   │   ├── API_DOCUMENTATION.md
+│   │   └── API_ENDPOINTS.md
+│   ├── database/
+│   │   └── DATABASE_DESIGN.md
+│   ├── architecture/
+│   │   └── APPLICATION_ARCHITECTURE.md
+│   └── authentication/
+│       └── JWT_AUTHENTICATION.md
+│
+├── drizzle/
+│   └── migrations/
+│
+├── src/
+│   │
+│   ├── app/
+│   │   ├── (public)/
+│   │   │   ├── about/
+│   │   │   │   └── page.tsx
+│   │   │   └── contact/
+│   │   │       └── page.tsx
+│   │   │
+│   │   ├── (auth)/
+│   │   │   ├── layout.tsx
+│   │   │   ├── login/
+│   │   │   │   └── page.tsx
+│   │   │   ├── register/
+│   │   │   │   └── page.tsx
+│   │   │   ├── forgot-password/
+│   │   │   │   └── page.tsx
+│   │   │   ├── reset-password/
+│   │   │   │   └── page.tsx
+│   │   │   └── verify-email/
+│   │   │       └── page.tsx
+│   │   │
+│   │   ├── (dashboard)/
+│   │   │   ├── layout.tsx
+│   │   │   ├── dashboard/
+│   │   │   │   └── page.tsx
+│   │   │   │
+│   │   │   ├── members/
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── [memberId]/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── genealogy/
+│   │   │   │       └── page.tsx
+│   │   │   │
+│   │   │   ├── reports/
+│   │   │   │   └── page.tsx
+│   │   │   │
+│   │   │   └── settings/
+│   │   │       └── page.tsx
+│   │   │
+│   │   ├── (admin)/
+│   │   │   ├── admin/
+│   │   │   │   ├── layout.tsx
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── users/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── roles/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── permissions/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── audit-logs/
+│   │   │   │       └── page.tsx
+│   │   │   └── layout.tsx
+│   │   │
+│   │   ├── api/
+│   │   │   ├── auth/
+│   │   │   │   ├── login/route.ts
+│   │   │   │   ├── register/route.ts
+│   │   │   │   ├── logout/route.ts
+│   │   │   │   ├── refresh/route.ts
+│   │   │   │   ├── me/route.ts
+│   │   │   │   ├── forgot-password/route.ts
+│   │   │   │   ├── reset-password/route.ts
+│   │   │   │   ├── verify-email/route.ts
+│   │   │   │   └── sessions/
+│   │   │   │       ├── route.ts
+│   │   │   │       └── [sessionId]/route.ts
+│   │   │   │
+│   │   │   ├── dashboard/
+│   │   │   │   ├── route.ts
+│   │   │   │   ├── statistics/route.ts
+│   │   │   │   └── activities/route.ts
+│   │   │   │
+│   │   │   ├── members/
+│   │   │   │   ├── route.ts
+│   │   │   │   ├── [memberId]/
+│   │   │   │   │   ├── route.ts
+│   │   │   │   │   ├── status/route.ts
+│   │   │   │   │   └── profile/route.ts
+│   │   │   │   ├── tree/route.ts
+│   │   │   │   └── genealogy/route.ts
+│   │   │   │
+│   │   │   ├── users/
+│   │   │   │   ├── route.ts
+│   │   │   │   ├── me/route.ts
+│   │   │   │   └── [userId]/
+│   │   │   │       ├── route.ts
+│   │   │   │       ├── status/route.ts
+│   │   │   │       └── password/route.ts
+│   │   │   │
+│   │   │   ├── roles/
+│   │   │   │   ├── route.ts
+│   │   │   │   └── [roleId]/route.ts
+│   │   │   │
+│   │   │   ├── permissions/
+│   │   │   │   ├── route.ts
+│   │   │   │   └── [permissionId]/route.ts
+│   │   │   │
+│   │   │   ├── reports/
+│   │   │   │   ├── route.ts
+│   │   │   │   ├── members/route.ts
+│   │   │   │   └── exports/route.ts
+│   │   │   │
+│   │   │   ├── settings/
+│   │   │   │   ├── route.ts
+│   │   │   │   └── security/route.ts
+│   │   │   │
+│   │   │   └── health/
+│   │   │       ├── live/route.ts
+│   │   │       └── ready/route.ts
+│   │   │
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── globals.css
+│   │   └── favicon.ico
+│   │
+│   ├── components/
+│   │   ├── ui/
+│   │   ├── common/
+│   │   ├── layout/
+│   │   ├── forms/
+│   │   └── data-table/
+│   │
+│   ├── features/
+│   │   ├── auth/
+│   │   │   ├── components/
+│   │   │   ├── hooks/
+│   │   │   ├── services/
+│   │   │   ├── schemas/
+│   │   │   └── types/
+│   │   │
+│   │   ├── users/
+│   │   │   ├── components/
+│   │   │   ├── hooks/
+│   │   │   ├── services/
+│   │   │   ├── schemas/
+│   │   │   └── types/
+│   │   │
+│   │   ├── members/
+│   │   │   ├── components/
+│   │   │   ├── hooks/
+│   │   │   ├── services/
+│   │   │   ├── schemas/
+│   │   │   └── types/
+│   │   │
+│   │   ├── genealogy/
+│   │   │   ├── components/
+│   │   │   ├── hooks/
+│   │   │   ├── services/
+│   │   │   └── types/
+│   │   │
+│   │   ├── roles-permissions/
+│   │   │   ├── components/
+│   │   │   ├── hooks/
+│   │   │   ├── services/
+│   │   │   ├── schemas/
+│   │   │   └── types/
+│   │   │
+│   │   ├── reports/
+│   │   └── settings/
+│   │
+│   ├── server/
+│   │   ├── services/
+│   │   │   ├── auth.service.ts
+│   │   │   ├── user.service.ts
+│   │   │   ├── member.service.ts
+│   │   │   ├── genealogy.service.ts
+│   │   │   ├── role.service.ts
+│   │   │   └── report.service.ts
+│   │   │
+│   │   ├── repositories/
+│   │   │   ├── user.repository.ts
+│   │   │   ├── member.repository.ts
+│   │   │   ├── genealogy.repository.ts
+│   │   │   ├── role.repository.ts
+│   │   │   └── permission.repository.ts
+│   │   │
+│   │   └── dal/
+│   │       ├── user.dal.ts
+│   │       ├── member.dal.ts
+│   │       └── dashboard.dal.ts
+│   │
+│   ├── lib/
+│   │   ├── auth/
+│   │   │   ├── jwt.ts
+│   │   │   ├── session.ts
+│   │   │   ├── password.ts
+│   │   │   ├── permissions.ts
+│   │   │   └── authorization.ts
+│   │   │
+│   │   ├── db/
+│   │   │   ├── index.ts
+│   │   │   ├── schema/
+│   │   │   └── relations.ts
+│   │   │
+│   │   ├── validations/
+│   │   ├── api/
+│   │   │   ├── response.ts
+│   │   │   └── error-handler.ts
+│   │   ├── constants/
+│   │   └── utils/
+│   │
+│   ├── types/
+│   │   ├── api.types.ts
+│   │   ├── auth.types.ts
+│   │   └── common.types.ts
+│   │
+│   └── proxy.ts
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+│
+├── .env.example
+├── .gitignore
+├── drizzle.config.ts
+├── next.config.ts
+├── package.json
+├── tsconfig.json
+└── README.md
