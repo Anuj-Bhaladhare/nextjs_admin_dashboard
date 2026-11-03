@@ -1,11 +1,16 @@
-import React from "react";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth/session";
 
-const Home = () => {
-  return (
-    <div>
-      <h1>Home</h1>
-    </div>
-  )
+const HomePage = async () => {
+
+  const session = await getCurrentUser();
+
+  if (session) {
+    redirect("/dashboard");
+  }
+
+  redirect("/login");
+
 }
 
-export default Home;
+export default HomePage;

@@ -23,11 +23,11 @@ const authRoutes = [
 // Routes that require the user to be authenticated.
 const privateRoutes = [
     "/dashboard",
-    "/dashboard/admin",
-    "/dashboard/members",
-    "/dashboard/reports",
-    "/dashboard/settings",
-    "/dashboard/users",
+    "/admin",
+    "/members",
+    "/reports",
+    "/settings",
+    "/users"
 ];
 
 // Check whether the requested pathname matches any route
