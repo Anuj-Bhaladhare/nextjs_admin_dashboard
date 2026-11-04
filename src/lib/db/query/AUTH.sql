@@ -16,13 +16,13 @@ VALUES
 INSERT INTO core.user_organizations
     (user_id, organization_id)
 VALUES
-    ('af175007-e13e-4e77-b510-270b312cd703', 'e492aba4-6e03-411b-814a-673f1c6962b0');
+    ('db5c8931-d63f-4cad-9987-620ae86ba3ad', '29478c66-9833-47f8-be4b-75642c5991d8');
 
 
 
 UPDATE rbac.roles
-SET organization_id = 'e492aba4-6e03-411b-814a-673f1c6962b0'
-WHERE id = '1cb6e940-13e4-410f-8cb3-8a07ae17a06d';
+SET organization_id = '29478c66-9833-47f8-be4b-75642c5991d8'
+WHERE id = 'b10a232c-90ec-44f2-8c8d-88c0c52c6ed5';
 
 
 
@@ -30,6 +30,6 @@ WHERE id = '1cb6e940-13e4-410f-8cb3-8a07ae17a06d';
 INSERT INTO rbac.user_roles
     (user_id, role_id, organization_id , assigned_by)
 VALUES
-    ('af175007-e13e-4e77-b510-270b312cd703', '1cb6e940-13e4-410f-8cb3-8a07ae17a06d', 'e492aba4-6e03-411b-814a-673f1c6962b0', 'af175007-e13e-4e77-b510-270b312cd703');
+    ('db5c8931-d63f-4cad-9987-620ae86ba3ad', 'b10a232c-90ec-44f2-8c8d-88c0c52c6ed5', '29478c66-9833-47f8-be4b-75642c5991d8', 'db5c8931-d63f-4cad-9987-620ae86ba3ad');
     
 
