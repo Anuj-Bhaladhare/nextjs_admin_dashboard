@@ -20,19 +20,16 @@ VALUES
 
 
 
+UPDATE rbac.roles
+SET organization_id = 'e492aba4-6e03-411b-814a-673f1c6962b0'
+WHERE id = '1cb6e940-13e4-410f-8cb3-8a07ae17a06d';
+
+
+
+
 INSERT INTO rbac.user_roles
     (user_id, role_id, organization_id , assigned_by)
 VALUES
     ('af175007-e13e-4e77-b510-270b312cd703', '1cb6e940-13e4-410f-8cb3-8a07ae17a06d', 'e492aba4-6e03-411b-814a-673f1c6962b0', 'af175007-e13e-4e77-b510-270b312cd703');
     
-
-
-
-
-
-
-
-
-
-
 
