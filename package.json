@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-email/render": "^2.2.0",
+    "axios": "^1.21.0",
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.15",
     "lucide-react": "^1.66.0",
