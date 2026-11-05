@@ -1,0 +1,13 @@
+ok now we will understand the role based authentication system on this app so we have SUPER ADMIN, ADMIN, and other user based on thair roles like gurd, data entry operator, supervisor, etc . that provided by ADMIN or SUPER ADMIN. and also other user will created by ADMIN or SUPER ADMIN. so explain me how to manage complee authentication system for this architecture, that means how admin and super admin will create and how admin is create other users, explain complete step by step process, first
+
+
+Email: anujbhaladhare2000@gmail.com
+https://chatgpt.com/c/6ae5d76a-e8d8-83ec-bcea-4e20e0d1ed85
+
+
+
+SecureGateControl: 	
+    DB User: tech_team_user
+    DB Pass: Anuj@2000
+    Database: secure_gate_control
+

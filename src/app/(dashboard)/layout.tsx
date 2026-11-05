@@ -1,19 +1,32 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth/session";
+
+
 export const metadata: Metadata = {
   title: "Sign in | Smart Gate Monitoring",
   description: "Sign in to your Smart Gate Monitoring workspace.",
 };
 
-interface LoginLayoutProps {
+interface DashboardLayoutProps {
   children: ReactNode
 }
 
-const LoginLayout = ({ children }: LoginLayoutProps) => {
+const DashboardLayout = async ({ children }: DashboardLayoutProps) => {
+
+  const session = await getCurrentUser();
+
+  if ( !session ) {
+    redirect("/login");
+  }
+
   return (
-    <div> { children } </div>
+    <> 
+      { children } 
+    </>
   );
 }
 
-export default LoginLayout;
+export default DashboardLayout;

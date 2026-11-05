@@ -6,8 +6,10 @@ import Link from "next/link";
 import AuthIcons from "@/components/auth/AuthIcons";
 import BrandMark from "@/components/auth/BrandMark";
 import TextField from "@/components/auth/TextField"
+import useLogin from "./hook";
 
 const { ShieldIcon, MailIcon, UserIcon, PhoneIcon, EyeIcon } = AuthIcons();
+const [{ handleSubmitLoginForm }] = useLogin();
 
 type FormFieldName =
   | "fullName"
@@ -32,13 +34,22 @@ function isFormFieldName(name: string): name is FormFieldName {
   ].some((fieldName) => fieldName === name);
 }
 
+interface LoginUserForm {
+  email: string;
+  password: string;
+}
+
 const Login = () => {
 
     const [errors, setErrors] = useState<FieldErrors>({});
     const [notice, setNotice] = useState<Notice | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const [ initialState, setInitialState ] = useState<LoginUserForm>({
+      email: "",
+      password: ""
+    })
 
   const clearError = (name: FormFieldName) => {
     if (errors[name]) {
@@ -46,8 +57,18 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log("handleSubmit from Login Page");
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+
+      const response = await handleSubmitLoginForm(initialState.email, initialState.password);
+      console.log("==================>", response);
+
+    } catch (error: any) {
+      throw new error;
+    }
+    
   }
 
   return (
@@ -171,12 +192,18 @@ const Login = () => {
                 icon={<MailIcon />}
                 id="email"
                 inputMode="email"
+                value={initialState.email}
+                onChange={ (event) => {
+                  setInitialState( (prev) => ({
+                    ...prev,
+                    email: event.target.value
+                  }))
+                }}
                 label="Email address"
                 name="email"
                 placeholder="you@company.com"
                 type="email"
               />
-
 
               <TextField
                 autoComplete={"current-password"}
@@ -185,6 +212,13 @@ const Login = () => {
                 id="password"
                 label="Password"
                 name="password"
+                value={initialState.password}
+                onChange={ (event) => {
+                  setInitialState( (prev) => ({
+                    ...prev,
+                    password: event.target.value
+                  }))
+                }}
                 onToggleVisibility={() =>
                   setShowPassword((current) => !current)
                 }
