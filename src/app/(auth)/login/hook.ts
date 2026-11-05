@@ -1,31 +1,40 @@
+import relayService from "@/axios/hook";
 
+const useLogin = () => {
 
+    const handleSubmitLoginForm = async (email: string, password: string) => {
 
-const useLoginHook = () => {
-
-    const function1 = async () => {
         try {
-            console.log("11111");
-        } catch (error) {
-            console.log("11111");
+            const response = await relayService({
+                url: "/api/auth/login",
+                method: "POST",
+                data: {
+                    email: email,
+                    password: password
+                }
+            })
 
+            if (response) {
+                return {
+                    status: true,
+                    data: response?.data
+                }
+            } else {
+                return {
+                    status: false,
+                    message: "Data Not Found"
+                };
+            }
+
+        } catch (error: any) {
+            console.error("Login API Error:", error);
+            throw error;
         }
+
     }
 
-    const function2 = async () => {
-        try {
-            console.log("11111");
-        } catch (error) {
-            console.log("11111");
-
-        }
-    }
-
-    return {
-        function1,
-        function2
-    }
+    return [{ handleSubmitLoginForm }] as const;
 
 }
 
-export default useLoginHook;
+export default useLogin;

@@ -25,7 +25,13 @@ const secretKey = new TextEncoder().encode(secret);
 // role defines the user's authorization role.
 export interface AccessTokenPayload {
     userId: string,
-    role: string
+    roleId: string,
+    organizationId: string,
+    userRole: string,
+    status: string,
+    organizationName: string,
+    firstName: string,
+    lastName: string
 }
 
 // Create a new access token for an authenticated user.
@@ -34,7 +40,14 @@ export async function createAccessToken(
 ) {
     return new SignJWT({
         // Store the user's role inside the JWT payload.
-        role: payload.role,
+        userId: payload.userId,
+        roleId: payload.roleId,
+        organizationId: payload.organizationId,
+        userRole: payload.userRole,
+        status: payload.status,
+        organizationName: payload.organizationName,
+        firstName: payload.firstName,
+        lastName: payload.lastName
     })
         // Set the signing algorithm to HS256.
         .setProtectedHeader({ alg: "HS256" })
@@ -52,7 +65,7 @@ export async function createAccessToken(
         .setIssuedAt()
 
         // Set the token expiration time to 15 minutes.
-        .setExpirationTime("15m")
+        .setExpirationTime(process.env.JWT_EXPIRES_IN!)
 
         // Sign the JWT using the secret key and return the token.
         .sign(secretKey);

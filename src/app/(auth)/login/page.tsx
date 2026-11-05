@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
-import relayService from "@/axios/hook";
-
 import AuthIcons from "@/components/auth/AuthIcons";
 import BrandMark from "@/components/auth/BrandMark";
 import TextField from "@/components/auth/TextField"
+import useLogin from "./hook";
 
 const { ShieldIcon, MailIcon, UserIcon, PhoneIcon, EyeIcon } = AuthIcons();
+const [{ handleSubmitLoginForm }] = useLogin();
 
 type FormFieldName =
   | "fullName"
@@ -57,30 +57,18 @@ const Login = () => {
     }
   };
 
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-
     event.preventDefault();
 
     try {
-      const response = await relayService<LoginUserForm[]>({
-        url: "/api/auth/login",
-        method: "POST",
-        data: {
-          email: initialState.email,
-          password: initialState.password
-        }
-      })
 
-      console.log("response", response?.data?.data);
+      const response = await handleSubmitLoginForm(initialState.email, initialState.password);
+      console.log("==================>", response);
 
-
-
-        
-    } catch (error) {
-
+    } catch (error: any) {
+      throw new error;
     }
-
+    
   }
 
   return (
