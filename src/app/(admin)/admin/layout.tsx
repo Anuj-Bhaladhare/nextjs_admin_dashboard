@@ -7,8 +7,13 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  
   await requireRole(["SUPER_ADMIN", "ADMIN"]);
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+    </>
+  );
 }
 

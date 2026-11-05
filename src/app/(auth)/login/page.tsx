@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import AuthIcons from "@/components/auth/AuthIcons";
 import BrandMark from "@/components/auth/BrandMark";
 import TextField from "@/components/auth/TextField"
 import useLogin from "./hook";
+import { setAuthCookie } from "../../actions/auth";
 
 const { ShieldIcon, MailIcon, UserIcon, PhoneIcon, EyeIcon } = AuthIcons();
 const [{ handleSubmitLoginForm }] = useLogin();
@@ -45,6 +47,7 @@ const Login = () => {
     const [notice, setNotice] = useState<Notice | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
 
     const [ initialState, setInitialState ] = useState<LoginUserForm>({
       email: "",
@@ -62,9 +65,22 @@ const Login = () => {
 
     try {
 
-      const response = await handleSubmitLoginForm(initialState.email, initialState.password);
-      console.log("==================>", response);
+      const response = await handleSubmitLoginForm(
+        initialState.email, 
+        initialState.password
+      );
 
+      if (response?.status === true && response?.data?.token) {
+
+        // Set Token in HttpOnly Cookie
+        setAuthCookie(response?.data?.token);
+        
+        // Navigate to dashboard.
+        router.replace("/dashboard");
+  
+
+      } 
+      
     } catch (error: any) {
       throw new error;
     }

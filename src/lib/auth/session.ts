@@ -17,7 +17,7 @@ export const getCurrentUser = async () => {
     // Retrieve the access_token cookie.
     // Optional chaining (?.) prevents errors if the cookie does not exist.
     // The .value property extracts the actual JWT token.
-    const token = cookieStore.get('access_token')?.value;
+    const token = cookieStore.get('token')?.value;
 
     // If no access token is found, the user is not authenticated.
     if (!token) {
@@ -37,6 +37,6 @@ export const getCurrentUser = async () => {
     // Map userId to id and include the user's role.
     return {
         id: payload.userId,
-        role: payload.role
+        role: payload.userRole
     };
 }

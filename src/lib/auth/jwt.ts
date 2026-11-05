@@ -73,6 +73,7 @@ export async function createAccessToken(
 
 // Verify an existing access token and extract its payload.
 export async function verifyAccessToken(token: string) {
+
     try {
 
         // Verify the JWT signature and validate its claims.
@@ -91,7 +92,7 @@ export async function verifyAccessToken(token: string) {
         // Return null if either claim is missing or has an invalid type.
         if (
             typeof payload.sub !== "string" ||
-            typeof payload.role !== "string"
+            typeof payload.userRole !== "string"
         ) {
             return null;
         }
@@ -100,7 +101,7 @@ export async function verifyAccessToken(token: string) {
         // The subject claim is mapped to userId.
         return {
             userId: payload.sub,
-            role: payload.role
+            userRole: payload.userRole
         };
 
     } catch (error) {
