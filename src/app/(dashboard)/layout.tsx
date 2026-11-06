@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -14,18 +15,23 @@ interface DashboardLayoutProps {
   children: ReactNode
 }
 
-const DashboardLayout = async ({ children }: DashboardLayoutProps) => {
-
+async function DashboardAuth({
+  children,
+}: DashboardLayoutProps) {
   const session = await getCurrentUser();
 
   if ( !session ) {
     redirect("/login");
   }
 
+  return <>{children}</>;
+}
+
+const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
-    <> 
-      { children } 
-    </>
+    <Suspense fallback={<div>Loading authentication...</div>}>
+      <DashboardAuth>{children}</DashboardAuth>
+    </Suspense>
   );
 }
 

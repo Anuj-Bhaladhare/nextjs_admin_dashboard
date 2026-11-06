@@ -1,7 +1,11 @@
 import bcrypt from "bcryptjs" 
 import { NextResponse } from "next/server";
 
+import { randomUUID } from "node:crypto";
+import { getPostgresPool } from "@/lib/db/client";
 import { createAccessToken } from "@/lib/auth/jwt"
+import { hashAccessToken } from "@/lib/auth/session";
+import { ACCESS_TOKEN_COOKIE, ACCESS_TOKEN_MAX_AGE } from "@/lib/auth/cookie";
 
 import LoginRepository from "./login.repository";
 import LoginResponse from "./login.response";
@@ -17,7 +21,7 @@ export const POST = async (request: Request): Promise<NextResponse> => {
 
         try {
             body = await request.json();
-        } catch (error) {
+        } catch {
             return jsonResponse(
                 { 
                     status: false,
@@ -63,6 +67,13 @@ export const POST = async (request: Request): Promise<NextResponse> => {
         // Get User Details by User Email
         const user_result = await getUserByEmail(normalizedEmail);
 
+        if (user_result.status !== "ACTIVE") {
+            return jsonResponse(
+                { status: false, error: "This account is not active." },
+                403,
+            );
+        }
+
         // Get User Role by User ID
         const user_roles_junction = await getUserRoleByUserID(user_result.id);
 
@@ -82,29 +93,45 @@ export const POST = async (request: Request): Promise<NextResponse> => {
             )
         }
         
+        const sessionId = randomUUID();
         const payload = {
             userId: user_result.id,
             roleId: user_roles.id,
             organizationId: user_organization.id,
             userRole: user_roles.name,
-            status: user_result.status,
-            organizationName: user_organization.name,
-            firstName: user_result.first_name,
-            lastName: user_result.last_name
+            sessionId,
         }
 
         const jwt_token = await createAccessToken(payload);
 
         if (jwt_token) {
-            // return user details
-            return jsonResponse(
-                {
-                    status: true,
-                    message: "User Login Success..!",
-                    token: jwt_token
-                },
-                200
-            )
+            const expiresAt = new Date(Date.now() + ACCESS_TOKEN_MAX_AGE * 1000);
+
+            await getPostgresPool().query(
+                `INSERT INTO auth.sessions
+                    (id, user_id, token_hash, user_agent, expires_at)
+                 VALUES ($1, $2, $3, $4, $5)`,
+                [
+                    sessionId,
+                    user_result.id,
+                    hashAccessToken(jwt_token),
+                    request.headers.get("user-agent")?.slice(0, 1000) ?? null,
+                    expiresAt,
+                ],
+            );
+
+            const response = jsonResponse(
+                { status: true, message: "User Login Success..!" },
+                200,
+            );
+            response.cookies.set(ACCESS_TOKEN_COOKIE, jwt_token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+                maxAge: ACCESS_TOKEN_MAX_AGE,
+            });
+            return response;
         } else {
             return jsonResponse(
                 {
@@ -116,11 +143,11 @@ export const POST = async (request: Request): Promise<NextResponse> => {
         }
 
     } catch (error) {
+        console.error("Login failed:", error);
         return jsonResponse(
             {  
                 status: false, 
                 message: "Internal Server Error",
-                error: error
             },
             500
         );

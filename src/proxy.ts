@@ -1,20 +1,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
+import { ACCESS_TOKEN_COOKIE } from "@/lib/auth/cookie";
 import { verifyAccessToken } from "@/lib/auth/jwt";
-
-const publicRoutes = [
-    "/",
-    "/about",
-    "/contact",
-];
-
-const authRoutes = [
-    "/login",
-    "/register",
-    "/forgot-password",
-    "/reset-password",
-    "/verify-email",
-];
 
 const privateRoutes = [
     "/dashboard",
@@ -37,10 +24,9 @@ const matchesRoute = (pathname: string, routes: string[]) => {
 export const proxy = async (request: NextRequest) => {
     const { pathname } = request.nextUrl;
 
-    const isAuthRoute = matchesRoute(pathname, authRoutes);
     const isPrivateRoute = matchesRoute(pathname, privateRoutes);
 
-    const token = request.cookies.get("access_token")?.value;
+    const token = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
 
     let payload = null;
 
@@ -63,24 +49,17 @@ export const proxy = async (request: NextRequest) => {
         const response = NextResponse.redirect(loginUrl);
 
         if (token) {
-            response.cookies.delete("access_token");
+            response.cookies.delete(ACCESS_TOKEN_COOKIE);
         }
 
         return response;
-    }
-
-    // Prevent authenticated users from accessing auth pages.
-    if (isAuthRoute && isAuthenticated) {
-        return NextResponse.redirect(
-            new URL("/dashboard", request.url)
-        );
     }
 
     // Remove invalid token.
     if (token && !isAuthenticated) {
         const response = NextResponse.next();
 
-        response.cookies.delete("access_token");
+        response.cookies.delete(ACCESS_TOKEN_COOKIE);
 
         return response;
     }
@@ -93,4 +72,3 @@ export const config = {
         "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
     ],
 };
-

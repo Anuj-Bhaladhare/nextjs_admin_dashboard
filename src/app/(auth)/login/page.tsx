@@ -8,10 +8,8 @@ import AuthIcons from "@/components/auth/AuthIcons";
 import BrandMark from "@/components/auth/BrandMark";
 import TextField from "@/components/auth/TextField"
 import useLogin from "./hook";
-import { setAuthCookie } from "../../actions/auth";
 
-const { ShieldIcon, MailIcon, UserIcon, PhoneIcon, EyeIcon } = AuthIcons();
-const [{ handleSubmitLoginForm }] = useLogin();
+const { ShieldIcon, MailIcon } = AuthIcons();
 
 type FormFieldName =
   | "fullName"
@@ -43,6 +41,7 @@ interface LoginUserForm {
 
 const Login = () => {
 
+    const [{ handleSubmitLoginForm }] = useLogin();
     const [errors, setErrors] = useState<FieldErrors>({});
     const [notice, setNotice] = useState<Notice | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,6 +61,7 @@ const Login = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsSubmitting(true);
 
     try {
 
@@ -70,21 +70,28 @@ const Login = () => {
         initialState.password
       );
 
-      if (response?.status === true && response?.data?.token) {
+      console.log("==========response ============", response);
 
-        // Set Token in HttpOnly Cookie
-        setAuthCookie(response?.data?.token);
-        
+      if (response?.status === true) {
         // Navigate to dashboard.
         router.replace("/dashboard");
-  
-
-      } 
-      
-    } catch (error: any) {
-      throw new error;
+      } else {
+        setNotice({
+          type: "error",
+          message: "Unable to sign in with those credentials.",
+        });
+      }
+    } catch (error: unknown) {
+      setNotice({
+        type: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Unable to sign in. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    
   }
 
   return (

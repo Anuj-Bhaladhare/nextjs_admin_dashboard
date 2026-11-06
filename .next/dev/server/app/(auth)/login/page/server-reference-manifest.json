@@ -1,15 +1,4 @@
 {
-  "node": {
-    "40bd955f446dfcfd4e915e08c99dff12d6c9e4b674": {
-      "workers": {
-        "app/(auth)/login/page": {
-          "moduleId": "[project]/.next-internal/server/app/(auth)/login/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        }
-      },
-      "exportedName": "setAuthCookie",
-      "filename": "src/app/actions/auth.ts"
-    }
-  },
+  "node": {},
   "edge": {}
 }
