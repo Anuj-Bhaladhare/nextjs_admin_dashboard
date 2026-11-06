@@ -123,11 +123,6 @@
       "email": "Email",
       "inbox": "Inbox",
       "inboxDetails": "Details"
-    },
-    "widget": {
-      "title": "#1 Tailwind CSS Dashboard",
-      "description": "Leading Tailwind CSS Admin Template with 500+ UI Component and Pages.",
-      "purchasePlan": "Purchase Plan"
     }
   },
   "header": {
