@@ -3,7 +3,7 @@ import React from "react";
 const Users = () => {
     return (
         <div>
-            <div>Users</div>
+            <div>Permissions</div>
         </div>
     )
 }

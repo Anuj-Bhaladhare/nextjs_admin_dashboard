@@ -22,7 +22,7 @@ export const requireRole = async (allowedRoles: string[]) => {
 
     // Check whether the authenticated user's role
     // exists in the list of allowed roles.
-    //
+    // 
     // If the user's role is not allowed,
     // redirect them to the dashboard.
     if (!allowedRoles.includes(user.role)) {

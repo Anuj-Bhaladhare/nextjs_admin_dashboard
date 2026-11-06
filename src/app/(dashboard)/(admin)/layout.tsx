@@ -8,7 +8,7 @@ async function AdminAuthorization({
 }: {
   children: React.ReactNode;
 }) {
-  await requireRole(["SUPER_ADMIN", "ADMIN"]);
+  await requireRole(["SUPER ADMIN", "ADMIN"]);
 
   return <>{children}</>;
 }
