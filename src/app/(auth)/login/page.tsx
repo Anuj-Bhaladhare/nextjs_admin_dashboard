@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import AuthIcons from "@/components/auth/AuthIcons";
@@ -8,8 +9,7 @@ import BrandMark from "@/components/auth/BrandMark";
 import TextField from "@/components/auth/TextField"
 import useLogin from "./hook";
 
-const { ShieldIcon, MailIcon, UserIcon, PhoneIcon, EyeIcon } = AuthIcons();
-const [{ handleSubmitLoginForm }] = useLogin();
+const { ShieldIcon, MailIcon } = AuthIcons();
 
 type FormFieldName =
   | "fullName"
@@ -41,10 +41,12 @@ interface LoginUserForm {
 
 const Login = () => {
 
+    const [{ handleSubmitLoginForm }] = useLogin();
     const [errors, setErrors] = useState<FieldErrors>({});
     const [notice, setNotice] = useState<Notice | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
 
     const [ initialState, setInitialState ] = useState<LoginUserForm>({
       email: "",
@@ -59,16 +61,37 @@ const Login = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsSubmitting(true);
 
     try {
 
-      const response = await handleSubmitLoginForm(initialState.email, initialState.password);
-      console.log("==================>", response);
+      const response = await handleSubmitLoginForm(
+        initialState.email, 
+        initialState.password
+      );
 
-    } catch (error: any) {
-      throw new error;
+      console.log("==========response ============", response);
+
+      if (response?.status === true) {
+        // Navigate to dashboard.
+        router.replace("/dashboard");
+      } else {
+        setNotice({
+          type: "error",
+          message: "Unable to sign in with those credentials.",
+        });
+      }
+    } catch (error: unknown) {
+      setNotice({
+        type: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Unable to sign in. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    
   }
 
   return (

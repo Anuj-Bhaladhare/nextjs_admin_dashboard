@@ -26,12 +26,9 @@ const secretKey = new TextEncoder().encode(secret);
 export interface AccessTokenPayload {
     userId: string,
     roleId: string,
-    organizationId: string,
+    organizationId: string | null,
     userRole: string,
-    status: string,
-    organizationName: string,
-    firstName: string,
-    lastName: string
+    sessionId: string,
 }
 
 // Create a new access token for an authenticated user.
@@ -44,16 +41,13 @@ export async function createAccessToken(
         roleId: payload.roleId,
         organizationId: payload.organizationId,
         userRole: payload.userRole,
-        status: payload.status,
-        organizationName: payload.organizationName,
-        firstName: payload.firstName,
-        lastName: payload.lastName
     })
         // Set the signing algorithm to HS256.
         .setProtectedHeader({ alg: "HS256" })
 
         // Set the user ID as the subject (sub) claim.
         .setSubject(payload.userId)
+        .setJti(payload.sessionId)
 
         // Set the trusted issuer of the token.
         .setIssuer(process.env.JWT_ISSUER!)
@@ -64,8 +58,8 @@ export async function createAccessToken(
         // Automatically add the token creation timestamp (iat).
         .setIssuedAt()
 
-        // Set the token expiration time to 15 minutes.
-        .setExpirationTime(process.env.JWT_EXPIRES_IN!)
+        // Keep the access token lifetime aligned with the session cookie.
+        .setExpirationTime("7d")
 
         // Sign the JWT using the secret key and return the token.
         .sign(secretKey);
@@ -73,6 +67,7 @@ export async function createAccessToken(
 
 // Verify an existing access token and extract its payload.
 export async function verifyAccessToken(token: string) {
+
     try {
 
         // Verify the JWT signature and validate its claims.
@@ -89,9 +84,14 @@ export async function verifyAccessToken(token: string) {
 
         // Validate that the subject and role claims are strings.
         // Return null if either claim is missing or has an invalid type.
+        const organizationId = payload.organizationId;
+
         if (
             typeof payload.sub !== "string" ||
-            typeof payload.role !== "string"
+            typeof payload.jti !== "string" ||
+            typeof payload.roleId !== "string" ||
+            (typeof organizationId !== "string" && organizationId !== null) ||
+            typeof payload.userRole !== "string"
         ) {
             return null;
         }
@@ -100,15 +100,13 @@ export async function verifyAccessToken(token: string) {
         // The subject claim is mapped to userId.
         return {
             userId: payload.sub,
-            role: payload.role
+            userRole: payload.userRole,
+            sessionId: payload.jti,
+            roleId: payload.roleId,
+            organizationId,
         };
 
-    } catch (error) {
-
-        // Log the verification error.
-        // This can happen if the token is expired, invalid,
-        // incorrectly signed, or has invalid claims.
-        console.log("Error Occure in verify Access Token", error);
+    } catch {
 
         // Return null when token verification fails.
         return null;

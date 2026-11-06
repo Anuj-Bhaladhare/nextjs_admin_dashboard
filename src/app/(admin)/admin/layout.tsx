@@ -1,8 +1,9 @@
 
 
+import { Suspense } from "react";
 import { requireRole } from "@/lib/auth/permissions";
 
-export default async function AdminLayout({
+async function AdminAuthorization({
   children,
 }: {
   children: React.ReactNode;
@@ -12,3 +13,14 @@ export default async function AdminLayout({
   return <>{children}</>;
 }
 
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={<div>Loading authorization...</div>}>
+      <AdminAuthorization>{children}</AdminAuthorization>
+    </Suspense>
+  );
+}

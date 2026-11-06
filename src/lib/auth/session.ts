@@ -1,42 +1,65 @@
 
 import "server-only";
 
-// Import cookies() from Next.js to access cookies stored in the user's browser.
+import { createHash } from "node:crypto";
 import { cookies } from "next/headers";
-
-// Import the function used to verify the JWT access token.
+import { ACCESS_TOKEN_COOKIE } from "./cookie";
+import { getPostgresPool } from "@/lib/db/client";
 import { verifyAccessToken } from "./jwt";
 
-// Get the currently authenticated user's information.
-export const getCurrentUser = async () => {
+export function hashAccessToken(token: string): string {
+    return createHash("sha256").update(token).digest("hex");
+}
 
-    // Get the cookies stored in the incoming request.
-    // In Next.js, cookies() is asynchronous.
+export async function getCurrentUser() {
     const cookieStore = await cookies();
 
-    // Retrieve the access_token cookie.
-    // Optional chaining (?.) prevents errors if the cookie does not exist.
-    // The .value property extracts the actual JWT token.
-    const token = cookieStore.get('access_token')?.value;
+    const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
 
-    // If no access token is found, the user is not authenticated.
     if (!token) {
         return null;
     }
 
-    // Verify the access token.
-    // This checks the token's signature, expiration, issuer, and audience.
     const payload = await verifyAccessToken(token);
 
-    // If the token is invalid or expired, return null.
     if (!payload) {
         return null;
     }
 
-    // Return the authenticated user's information.
-    // Map userId to id and include the user's role.
+    const result = await getPostgresPool().query<{ user_role: string }>(
+        `SELECT roles.name AS user_role
+         FROM auth.sessions AS auth_session
+         JOIN core.users AS users ON users.id = auth_session.user_id
+         JOIN rbac.user_roles AS user_roles
+           ON user_roles.user_id = users.id
+          AND user_roles.role_id = $4
+          AND user_roles.organization_id IS NOT DISTINCT FROM $5::uuid
+          AND user_roles.is_active = TRUE
+          AND (user_roles.expires_at IS NULL OR user_roles.expires_at > NOW())
+         JOIN rbac.roles AS roles
+           ON roles.id = user_roles.role_id
+          AND roles.is_active = TRUE
+         WHERE auth_session.id = $1
+           AND auth_session.user_id = $2
+           AND auth_session.token_hash = $3
+           AND auth_session.revoked_at IS NULL
+           AND auth_session.expires_at > NOW()
+           AND users.status = 'ACTIVE'`,
+        [
+            payload.sessionId,
+            payload.userId,
+            hashAccessToken(token),
+            payload.roleId,
+            payload.organizationId,
+        ],
+    );
+
+    if (result.rowCount !== 1 || !result.rows[0]?.user_role) {
+        return null;
+    }
+
     return {
         id: payload.userId,
-        role: payload.role
+        role: result.rows[0].user_role,
     };
 }

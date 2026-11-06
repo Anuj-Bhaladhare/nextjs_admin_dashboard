@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///home/anuj-kumar/projects_workspace/NextjsAdminDashboard/nextjs_admin_dashboard/src/app/(auth)/login/layout.tsx"],"sourcesContent":["import type { Metadata } from \"next\";\nimport type { ReactNode } from \"react\";\n\nexport const metadata: Metadata = {\n  title: \"Sign in | Smart Gate Monitoring\",\n  description: \"Sign in to your Smart Gate Monitoring workspace.\",\n};\n\ninterface LoginLayoutProps {\n  children: ReactNode\n}\n\nconst LoginLayout = ({ children }: LoginLayoutProps) => {\n  return (\n    <div> { children } </div>\n  );\n}\n\nexport default LoginLayout;"],"names":["metadata","title","description","LoginLayout","children"],"mappings":";;;;;;;;AAGO,MAAMA,WAAqB;IAChCC,OAAO;IACPC,aAAa;AACf;AAMA,MAAMC,cAAc,CAAC,EAAEC,QAAQ,EAAoB;IACjD,qBACE,8OAAC;;YAAI;YAAGA;YAAU;;;;;;;AAEtB;uCAEeD"}}]
-}
