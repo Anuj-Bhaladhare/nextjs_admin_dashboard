@@ -1,7 +1,45 @@
-{"timestamp":"00:00:01.466","source":"Server","level":"LOG","message":"- Cache Components enabled"}
-{"timestamp":"00:00:01.466","source":"Server","level":"LOG","message":"- Partial Prefetching enabled"}
-{"timestamp":"00:00:01.467","source":"Server","level":"LOG","message":"- Experiments (use with caution):"}
-{"timestamp":"00:00:01.467","source":"Server","level":"LOG","message":"  ✓ agentFeedback"}
-{"timestamp":"00:00:01.467","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:22.738","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
-{"timestamp":"00:02:56.754","source":"Server","level":"LOG","message":"  Reload env: .env"}
+{"timestamp":"00:00:01.299","source":"Server","level":"LOG","message":"- Cache Components enabled"}
+{"timestamp":"00:00:01.299","source":"Server","level":"LOG","message":"- Partial Prefetching enabled"}
+{"timestamp":"00:00:01.299","source":"Server","level":"LOG","message":"- Experiments (use with caution):"}
+{"timestamp":"00:00:01.299","source":"Server","level":"LOG","message":"  ✓ agentFeedback"}
+{"timestamp":"00:00:01.299","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:08.653","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:01:06.150","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:01:06.901","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:01:06.981","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:08:00.422","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:08:01.232","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:11:35.147","source":"Server","level":"LOG","message":"✓ Compiled in 173ms"}
+{"timestamp":"00:11:35.259","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:11:35.802","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:11:35.933","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:14:23.742","source":"Server","level":"LOG","message":"✓ Compiled in 311ms"}
+{"timestamp":"00:14:23.844","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:16:01.466","source":"Server","level":"LOG","message":"✓ Compiled in 109ms"}
+{"timestamp":"00:16:01.549","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:16:29.073","source":"Browser","level":"ERROR","message":"./src/app/(auth)/layout.tsx:22:7\nError: the name `AuthGuard` is defined multiple times\n  20 |\n  21 |\n> 22 | const AuthGuard = async () => {\n     |       ^^^^^^^^^\n  23 |\n  24 | }\n  25 |\n\nEcmascript file had an error "}
+{"timestamp":"00:16:29.074","source":"Server","level":"ERROR","message":"[browser] \"./src/app/(auth)/layout.tsx:22:7\\nError: the name `AuthGuard` is defined multiple times\\n  20 |\\n  21 |\\n> 22 | const AuthGuard = async () => {\\n     |       ^^^^^^^^^\\n  23 |\\n  24 | }\\n  25 |\\n\\nEcmascript file had an error\" \"\""}
+{"timestamp":"00:16:29.108","source":"Browser","level":"ERROR","message":"./src/app/(auth)/layout.tsx:22:7\nError: the name `AuthGuard` is defined multiple times\n  20 |\n  21 |\n> 22 | const AuthGuard = async () => {\n     |       ^^^^^^^^^\n  23 |\n  24 | }\n  25 |\n\nEcmascript file had an error "}
+{"timestamp":"00:16:29.109","source":"Server","level":"ERROR","message":"[browser] \"./src/app/(auth)/layout.tsx:22:7\\nError: the name `AuthGuard` is defined multiple times\\n  20 |\\n  21 |\\n> 22 | const AuthGuard = async () => {\\n     |       ^^^^^^^^^\\n  23 |\\n  24 | }\\n  25 |\\n\\nEcmascript file had an error\" \"\""}
+{"timestamp":"00:16:47.228","source":"Server","level":"LOG","message":"✓ Compiled in 61ms"}
+{"timestamp":"00:16:47.306","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:18:12.611","source":"Server","level":"LOG","message":"✓ Compiled in 114ms"}
+{"timestamp":"00:20:46.671","source":"Server","level":"LOG","message":"✓ Compiled in 86ms"}
+{"timestamp":"00:20:46.874","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:21:40.365","source":"Server","level":"LOG","message":"✓ Compiled in 33ms"}
+{"timestamp":"00:21:40.408","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:22:01.170","source":"Browser","level":"ERROR","message":"./src/app/page.tsx:21:5\nError: Expression expected\n  19 |\n  20 |   return (\n> 21 |     <\n     |     ^\n  22 |   )\n  23 |\n  24 | }\n\nParsing ecmascript source code failed "}
+{"timestamp":"00:22:01.170","source":"Server","level":"ERROR","message":"[browser] \"./src/app/page.tsx:21:5\\nError: Expression expected\\n  19 |\\n  20 |   return (\\n> 21 |     <\\n     |     ^\\n  22 |   )\\n  23 |\\n  24 | }\\n\\nParsing ecmascript source code failed\" \"\""}
+{"timestamp":"00:22:12.385","source":"Server","level":"LOG","message":"✓ Compiled in 72ms"}
+{"timestamp":"00:22:12.427","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:22:37.109","source":"Server","level":"LOG","message":"✓ Compiled in 58ms"}
+{"timestamp":"00:22:37.187","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:22:56.098","source":"Server","level":"LOG","message":"✓ Compiled in 50ms"}
+{"timestamp":"00:22:56.180","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:24:57.877","source":"Server","level":"LOG","message":"✓ Compiled in 63ms"}
+{"timestamp":"00:24:57.952","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:25:58.272","source":"Server","level":"LOG","message":"✓ Compiled in 52ms"}
+{"timestamp":"00:25:58.327","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:33:36.171","source":"Server","level":"LOG","message":"✓ Compiled in 212ms"}
+{"timestamp":"00:33:36.480","source":"Server","level":"LOG","message":"============session.ts============> {}"}
+{"timestamp":"00:34:27.467","source":"Server","level":"LOG","message":"✓ Compiled in 145ms"}

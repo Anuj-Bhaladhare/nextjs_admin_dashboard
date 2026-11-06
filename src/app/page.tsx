@@ -1,16 +1,21 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/session";
 
-const HomePage = async () => {
+const HomeGuard = async () => {
+    const user = await getCurrentUser();
 
-  const session = await getCurrentUser();
+    if (user) {
+        redirect("/dashboard");
+    }
 
-  if (session) {
-    redirect("/dashboard");
-  }
-
-  redirect("/login");
-
+    redirect("/login");
 }
 
-export default HomePage;
+export default function HomePage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <HomeGuard />
+        </Suspense>
+    );
+}
