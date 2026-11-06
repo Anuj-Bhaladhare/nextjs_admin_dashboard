@@ -1,9 +1,0 @@
-{"timestamp":"00:00:00.469","source":"Server","level":"WARN","message":"⚠ Turbopack's filesystem cache has been deleted because we previously detected an internal error in Turbopack. Builds or page loads may be slower as a result."}
-{"timestamp":"00:00:00.966","source":"Server","level":"LOG","message":"- Cache Components enabled"}
-{"timestamp":"00:00:00.966","source":"Server","level":"LOG","message":"- Partial Prefetching enabled"}
-{"timestamp":"00:00:00.966","source":"Server","level":"LOG","message":"- Experiments (use with caution):"}
-{"timestamp":"00:00:00.966","source":"Server","level":"LOG","message":"  ✓ agentFeedback"}
-{"timestamp":"00:00:00.966","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:16.659","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
-{"timestamp":"00:00:18.975","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
-{"timestamp":"00:05:00.814","source":"Server","level":"LOG","message":"✓ Compiled in 457ms"}
