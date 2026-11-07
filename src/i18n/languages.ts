@@ -1,4 +1,5 @@
 import { UsFlagIcon } from "@/icons";
+import type { ImageProps } from "next/image";
 
 import type { Locale } from "./routing";
 
@@ -7,7 +8,7 @@ export interface Language {
   name: string;
   shortName: string;
   dir: "ltr" | "rtl";
-  FlagIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  flag: ImageProps["src"];
   badge?: string;
 }
 
@@ -17,7 +18,7 @@ export const languages: Language[] = [
     name: "English",
     shortName: "English",
     dir: "ltr",
-    FlagIcon: UsFlagIcon,
+    flag: UsFlagIcon,
   },
   // Add languages according to requirement
   // {
@@ -25,7 +26,7 @@ export const languages: Language[] = [
   //   name: "Arabic (Saudi)",
   //   shortName: "Arabic",
   //   dir: "rtl",
-  //   FlagIcon: SaFlagIcon,
+  //   flag: SaFlagIcon,
   //   badge: "RTL",
   // },
   // {
@@ -33,14 +34,14 @@ export const languages: Language[] = [
   //   name: "Español",
   //   shortName: "Español",
   //   dir: "ltr",
-  //   FlagIcon: EsFlagIcon,
+  //   flag: EsFlagIcon,
   // },
   // {
   //   id: "de",
   //   name: "Deutsch",
   //   shortName: "Deutsch",
   //   dir: "ltr",
-  //   FlagIcon: DeFlagIcon,
+  //   flag: DeFlagIcon,
   // },
 ];
 

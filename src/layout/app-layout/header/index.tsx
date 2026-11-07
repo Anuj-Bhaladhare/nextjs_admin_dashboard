@@ -67,16 +67,9 @@ export default function AppHeader() {
             <Image
               width={154}
               height={32}
-              className="dark:hidden"
               src="/logo/logo.png"
               alt="Logo"
-            />
-            <Image
-              width={154}
-              height={32}
-              className="hidden dark:block"
-              src="/logo/logo.png"
-              alt="Logo"
+              loading="eager"
             />
           </Link>
 
