@@ -3,7 +3,10 @@ ok now we will understand the role based authentication system on this app so we
 
 Email: anujbhaladhare2000@gmail.com
 https://chatgpt.com/c/6ae5d76a-e8d8-83ec-bcea-4e20e0d1ed85
+Database: https://chatgpt.com/c/6aedfc25-933c-83ee-916f-8b242d0583eb
 
+Gork: anujbhaladhare9@gmail.com
+https://grok.com/c/b48214ff-1a3c-4412-94cb-c66bccc596cd?rid=9612bd53-b00a-4733-837e-ea6f7f42005d
 
 
 SecureGateControl: 	
