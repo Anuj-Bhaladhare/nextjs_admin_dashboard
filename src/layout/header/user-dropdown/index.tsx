@@ -28,6 +28,8 @@ import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 
+import Avatar from 'react-initial-avatar';
+
 export default function UserDropdown() {
   const t = useTranslations("userDropdown");
   const locale = useLocale() as Locale;
@@ -36,7 +38,6 @@ export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
 
   const currentLang = getLanguage(locale);
-  const CurrentFlagIcon = currentLang.FlagIcon;
 
   const handleSelectLanguage = (id: Locale) => {
     router.replace(pathname, { locale: id });
@@ -46,12 +47,13 @@ export default function UserDropdown() {
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger className="dropdown-toggle flex items-center text-gray-700 dark:text-gray-400">
         <span className="me-3 h-11 w-11 overflow-hidden rounded-lg">
-          <Image
+          <Avatar name="Anuj Kumar" size={40} />
+          {/* <Image
             width={44}
             height={44}
-            src="/logo/logo-icons.png"
+            src="/logo/logo-icon.png"
             alt="User"
-          />
+          /> */}
         </span>
 
         <span className="me-1 block text-sm font-medium">Musharof</span>
@@ -76,17 +78,17 @@ export default function UserDropdown() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem render={<Link href="/profile" />}>
+        <DropdownMenuItem render={<Link href="/my-profile" />}>
           <UserCircleIcon className="size-6" />
           {t("editProfile")}
         </DropdownMenuItem>
 
-        <DropdownMenuItem render={<Link href="/profile" />}>
+        <DropdownMenuItem render={<Link href="/my-profile" />}>
           <GearIcon className="size-6" />
           {t("accountSettings")}
         </DropdownMenuItem>
 
-        <DropdownMenuItem render={<Link href="/profile" />}>
+        <DropdownMenuItem render={<Link href="/my-profile" />}>
           <InfoCircleIcon className="size-6" />
           {t("support")}
         </DropdownMenuItem>
@@ -99,10 +101,16 @@ export default function UserDropdown() {
               variant="light"
               color="gray"
               size="sm"
-              className="ms-auto me-1 h-auto gap-1.5 border border-gray-200 bg-gray-50 px-2 py-1 text-xs font-medium text-gray-700 text-shadow-none dark:border-gray-800 dark:bg-white/3 dark:text-gray-300 dark:text-shadow-none [&>svg]:size-3.5"
+              className="ms-auto me-1 h-auto gap-1.5 border border-gray-200 bg-gray-50 px-2 py-1 text-xs font-medium text-gray-700 text-shadow-none dark:border-gray-800 dark:bg-white/3 dark:text-gray-300 dark:text-shadow-none"
             >
               <span>{currentLang.shortName}</span>
-              <CurrentFlagIcon className="size-3.5 shrink-0 overflow-hidden rounded-full" />
+              <Image
+                src={currentLang.flag}
+                alt=""
+                width={14}
+                height={14}
+                className="size-3.5 shrink-0 overflow-hidden rounded-full"
+              />
             </Badge>
           </DropdownMenuSubTrigger>
 
@@ -110,7 +118,6 @@ export default function UserDropdown() {
             <DropdownMenuSubContent className="w-56 p-2">
               {languages.map((language) => {
                 const isSelected = locale === language.id;
-                const FlagIcon = language.FlagIcon;
 
                 return (
                   <DropdownMenuItem
@@ -131,7 +138,13 @@ export default function UserDropdown() {
                             : "opacity-0",
                         )}
                       />
-                      <FlagIcon className="size-5 shrink-0 overflow-hidden rounded-full" />
+                      <Image
+                        src={language.flag}
+                        alt=""
+                        width={20}
+                        height={20}
+                        className="size-5 shrink-0 overflow-hidden rounded-full"
+                      />
                       <span className="truncate">{language.name}</span>
                     </span>
 
@@ -155,7 +168,7 @@ export default function UserDropdown() {
 
         <DropdownMenuItem
           variant="destructive"
-          render={<Link href="/signin" />}
+          render={<Link href="/logout" />}
         >
           <LogOutIcon />
           {t("signOut")}

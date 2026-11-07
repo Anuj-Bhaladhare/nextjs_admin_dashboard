@@ -1,0 +1,34 @@
+SMART GATE MANAGEMENT
+
+──────────────────────────────
+A. OPERATIONS
+──────────────────────────────
+1. Dashboard
+2. Live Monitoring
+3. Employee Access
+4. Visitor Management
+5. Gate Control
+6. Access Logs
+7. Reports
+
+──────────────────────────────
+B. ADMINISTRATION
+──────────────────────────────
+8.  Building Management
+9.  Organization Management
+10. Employee Management
+11. Credential Management
+12. User Management
+13. Role & Permission Management
+14. Gate Management
+15. Device Management
+16. Audit Logs
+17. System Settings
+
+──────────────────────────────
+C. ACCOUNT
+──────────────────────────────
+18. My Profile
+19. Change Password
+20. My Sessions
+21. Logout

@@ -70,8 +70,6 @@ const Login = () => {
         initialState.password
       );
 
-      console.log("==========response ============", response);
-
       if (response?.status === true) {
         // Navigate to dashboard.
         router.replace("/dashboard");
