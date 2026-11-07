@@ -8,15 +8,15 @@ import {
 } from "@/components/ui/sidebar";
 import { usePathname } from "@/i18n/navigation";
 import { useState } from "react";
-import { navItems, othersItems, supportItems } from "./data";
+import { operationsItems, administrationItems, accountItems } from "./data";
 import AppSidebarHeader from "./sidebar-header";
 import SidebarNavGroup from "./sidebar-nav-group";
 import { MenuType, NavItem } from "./types";
 
 const menuSections: { type: MenuType; labelKey: string; items: NavItem[] }[] = [
-  { type: "main", labelKey: "groups.menu", items: navItems },
-  { type: "support", labelKey: "groups.support", items: supportItems },
-  { type: "others", labelKey: "groups.others", items: othersItems },
+  { type: "operations", labelKey: "groups.operations", items: operationsItems },
+  { type: "administration", labelKey: "groups.administration", items: administrationItems },
+  { type: "account", labelKey: "groups.account", items: accountItems },
 ];
 
 const findMatchingSubmenu = (path: string) => {

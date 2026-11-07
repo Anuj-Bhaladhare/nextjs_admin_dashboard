@@ -1,11 +1,11 @@
 import React from "react";
 
-const Users = () => {
+const AuditLogs = () => {
     return (
         <div>
-            <div>Audit Logs</div>
+            <div>AuditLogs</div>
         </div>
     )
 }
 
-export default Users;
+export default AuditLogs;
