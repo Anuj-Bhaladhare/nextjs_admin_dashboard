@@ -27,6 +27,8 @@ export interface AccessTokenPayload {
     userId: string,
     roleId: string,
     organizationId: string | null,
+    firstName: string,
+    lastName: string,
     userRole: string,
     sessionId: string,
 }
@@ -40,7 +42,9 @@ export async function createAccessToken(
         userId: payload.userId,
         roleId: payload.roleId,
         organizationId: payload.organizationId,
-        userRole: payload.userRole,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        userRole: payload.userRole
     })
         // Set the signing algorithm to HS256.
         .setProtectedHeader({ alg: "HS256" })
@@ -90,6 +94,8 @@ export async function verifyAccessToken(token: string) {
             typeof payload.sub !== "string" ||
             typeof payload.jti !== "string" ||
             typeof payload.roleId !== "string" ||
+            typeof payload.firstName !== "string" || 
+            typeof payload.lastName !== "string" || 
             (typeof organizationId !== "string" && organizationId !== null) ||
             typeof payload.userRole !== "string"
         ) {
@@ -101,6 +107,8 @@ export async function verifyAccessToken(token: string) {
         return {
             userId: payload.sub,
             userRole: payload.userRole,
+            firstName: payload.firstName,
+            lastName: payload.lastName,
             sessionId: payload.jti,
             roleId: payload.roleId,
             organizationId,

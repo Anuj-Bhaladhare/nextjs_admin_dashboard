@@ -23,10 +23,13 @@ import {
   LogOutIcon,
   UserCircleIcon,
 } from "@/icons";
+import { logout } from "@/lib/auth/logout";
 import { cn } from "@/utils";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
-import { useState } from "react";
+import useUserDropdown from "./hook";
+import { CurrentUser } from "./type";
+import { useState, useEffect } from "react";
 
 import Avatar from 'react-initial-avatar';
 
@@ -35,9 +38,26 @@ export default function UserDropdown() {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
+  const [{ getCurrentUser }] = useUserDropdown();
   const [isOpen, setIsOpen] = useState(false);
+  const [ userDetails, setUserDetails ] = useState< CurrentUser | null >(null);
 
   const currentLang = getLanguage(locale);
+
+
+  useEffect( () => {
+    const fetchUser = async () => {
+      try {
+        const user: CurrentUser | null = await getCurrentUser();
+        setUserDetails(user);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        setUserDetails(null);
+      }
+    }
+
+    fetchUser();
+  }, [getCurrentUser]);
 
   const handleSelectLanguage = (id: Locale) => {
     router.replace(pathname, { locale: id });
@@ -47,16 +67,10 @@ export default function UserDropdown() {
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger className="dropdown-toggle flex items-center text-gray-700 dark:text-gray-400">
         <span className="me-3 h-11 w-11 overflow-hidden rounded-lg">
-          <Avatar name="Anuj Kumar" size={40} />
-          {/* <Image
-            width={44}
-            height={44}
-            src="/logo/logo-icon.png"
-            alt="User"
-          /> */}
+          <Avatar name={`${userDetails?.first_name ?? ""} ${userDetails?.last_name ?? ""}`} size={40} />
         </span>
 
-        <span className="me-1 block text-sm font-medium">Musharof</span>
+        <span className="me-1 block text-sm font-medium">{userDetails?.first_name ?? "User"}</span>
 
         <ChevronDownIcon
           className={cn(
@@ -69,7 +83,7 @@ export default function UserDropdown() {
       <DropdownMenuContent align="end" sideOffset={12} className="w-65 p-3">
         <div className="px-3 py-2">
           <span className="block text-sm font-medium text-gray-700 dark:text-gray-400">
-            Musharof Chowdhury
+            {`${userDetails?.first_name} ${userDetails?.last_name}`}
           </span>
           <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
             randomuser@pimjo.com
@@ -168,7 +182,8 @@ export default function UserDropdown() {
 
         <DropdownMenuItem
           variant="destructive"
-          render={<Link href="/logout" />}
+          onClick={ () => logout() }
+          // render={<Link href="/logout" />}
         >
           <LogOutIcon />
           {t("signOut")}
