@@ -20,7 +20,7 @@ const useUserDropdown = () => {
 
     const getUserProfile = () => {
         try {
-            /api/users/profile/route.ts
+            // /api/users/profile
         } catch (error) {
             throw error;
         }
