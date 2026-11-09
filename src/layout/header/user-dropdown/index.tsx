@@ -32,6 +32,10 @@ import { CurrentUser } from "./type";
 import { useState, useEffect } from "react";
 
 import Avatar from 'react-initial-avatar';
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setUserDetails, clearUserDetails } from "@/redux/slices/user/userSlice";
+
+
 
 export default function UserDropdown() {
   const t = useTranslations("userDropdown");
@@ -40,19 +44,24 @@ export default function UserDropdown() {
   const pathname = usePathname();
   const [{ getCurrentUser }] = useUserDropdown();
   const [isOpen, setIsOpen] = useState(false);
-  const [ userDetails, setUserDetails ] = useState< CurrentUser | null >(null);
+  // const [ userDetails, setUserDetails ] = useState< CurrentUser | null >(null);
 
   const currentLang = getLanguage(locale);
-
+  const dispatch = useAppDispatch();
+  const userDetails = useAppSelector( (state) => state.user );
 
   useEffect( () => {
     const fetchUser = async () => {
       try {
         const user: CurrentUser | null = await getCurrentUser();
-        setUserDetails(user);
+        if (user) {
+          dispatch(setUserDetails(user));
+        } else {
+          dispatch(clearUserDetails());
+        }
       } catch (error) {
         console.error("Failed to fetch user:", error);
-        setUserDetails(null);
+        dispatch(clearUserDetails());
       }
     }
 
@@ -83,10 +92,10 @@ export default function UserDropdown() {
       <DropdownMenuContent align="end" sideOffset={12} className="w-65 p-3">
         <div className="px-3 py-2">
           <span className="block text-sm font-medium text-gray-700 dark:text-gray-400">
-            {`${userDetails?.first_name} ${userDetails?.last_name}`}
+            {`${userDetails?.first_name ?? ""} ${userDetails?.last_name ?? ""}`}
           </span>
           <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
-            randomuser@pimjo.com
+            { userDetails?.email ?? ""}
           </span>
         </div>
 
@@ -189,6 +198,8 @@ export default function UserDropdown() {
           {t("signOut")}
         </DropdownMenuItem>
       </DropdownMenuContent>
+
     </DropdownMenu>
   );
+
 }

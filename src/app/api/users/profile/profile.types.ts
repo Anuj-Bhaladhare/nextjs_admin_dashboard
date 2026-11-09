@@ -1,3 +1,3 @@
 export interface ProfileBody {
-    userId: string;
+    id: string;
 }  

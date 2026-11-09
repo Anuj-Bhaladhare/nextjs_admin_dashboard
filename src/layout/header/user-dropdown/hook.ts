@@ -6,6 +6,7 @@ const useUserDropdown = () => {
 
     const getCurrentUser = useCallback(async (): Promise<CurrentUser | null> => {
         try {
+
             const response = await relayService<CurrentUserResponse>({
                 url: "/api/auth/me",
                 method: 'GET'
@@ -17,14 +18,6 @@ const useUserDropdown = () => {
             throw error;
         }
     }, []);
-
-    const getUserProfile = () => {
-        try {
-            // /api/users/profile
-        } catch (error) {
-            throw error;
-        }
-    }
 
     return [{ getCurrentUser }] as const;
 

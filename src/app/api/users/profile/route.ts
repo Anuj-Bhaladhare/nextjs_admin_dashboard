@@ -1,40 +1,35 @@
 import { NextResponse } from "next/server";
 import ProfileRepository from "./profile.repository";
 import { ProfileBody } from "./profile.types";
-import ProfileResponse from "./profile.response";
-
-const [{ getUserById }] = ProfileRepository();
-const [{ jsonResponse }] = ProfileResponse();
+import { getCurrentUser } from "@/lib/auth/session";
+import { jsonResponse } from "@/app/api/jsonResponse";
+const [{ getUserByUserId }] = ProfileRepository();
+ 
 
 export const GET = async (request: Request): Promise<NextResponse> => {
 
 
-const session = await auth();
-
-const userId = session?.user?.id;
-
-// Fetch logged-in user's profile
-
-
     try {
-console.log("AAAAAAAAAAAA")
-        let body: ProfileBody;
-console.log("BBBBBBBBBBBBB")
+     
+        const session = await getCurrentUser();
 
-        try {
-            body = await request.json();
-        } catch (e) {
-            console.log("eeeeeeeee", e);
-            throw e;
+        if ( !session && !session) {
+            return jsonResponse(
+                {
+                    status: false,
+                    message: "User Not Login, Please Login First..!"
+                },
+                404
+            )
         }
-console.log("CCCCCCCCCCCC")
 
-        const { userId } = body;
-        console.log("========>", userId);
+        const profile = await getUserByUserId(session?.id);
 
         return jsonResponse(
             {
-                userId: userId
+                status: true,
+                data: profile,
+                message: "User Profile Get Successfylly"
             },
             200
         )

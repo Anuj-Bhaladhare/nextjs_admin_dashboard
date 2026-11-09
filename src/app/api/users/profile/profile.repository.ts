@@ -1,13 +1,12 @@
 import { getPostgresPool } from "@/lib/db/client";
-import LoginResponse from "./profile.response";
+import { jsonResponse } from "@/app/api/jsonResponse";
 
-const [{ jsonResponse }]= LoginResponse();  
 const pool = getPostgresPool();
 
 const ProfileRepository = () => {
     
     // Get User Details by Using email
-    const getUserById = async ( user_id: string ) => {
+    const getUserByUserId = async ( user_id: string ) => {
      
         try {
 
@@ -24,7 +23,26 @@ const ProfileRepository = () => {
                 )
             }
 
-            return result.rows[0];
+            const profile_data = {
+                id: result?.rows[0]?.id,
+                first_name: result?.rows[0]?.first_name,
+                last_name: result?.rows[0]?.last_name,
+                username: result?.rows[0]?.username,
+                email: result?.rows[0]?.email,
+                mobile: result?.rows[0]?.mobile,
+                status: result?.rows[0]?.status,
+                email_verified_at: result?.rows[0]?.email_verified_at,
+                mobile_verified_at: result?.rows[0]?.mobile_verified_at,
+                failed_login_attempts: result?.rows[0]?.failed_login_attempts,
+                locked_until: result?.rows[0]?.locked_until,
+                last_login_at: result?.rows[0]?.last_login_at,
+                created_by: result?.rows[0]?.created_by,
+                updated_by: result?.rows[0]?.updated_by,
+                created_at: result?.rows[0]?.created_at,
+                updated_at: result?.rows[0]?.updated_at
+            }
+
+            return profile_data;
 
         } catch (error) {
             console.error("Internal Server Error", error);
@@ -32,7 +50,7 @@ const ProfileRepository = () => {
         }
     } 
 
-    return [{ getUserById }] as const;
+    return [{ getUserByUserId }] as const;
 
 }
 

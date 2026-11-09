@@ -61,8 +61,8 @@ export async function getCurrentUser() {
     return {
         id: payload.userId,
         role: result.rows[0].user_role,
-        first_name: payload.firstName,
-        last_name: payload.lastName,
-        organization_id: payload.organizationId
+        organization_id: payload.organizationId,
+        sessionId: payload.sessionId,
+        roleId: payload.roleId
     };
 }
