@@ -40,7 +40,7 @@ export async function createAccessToken(
         userId: payload.userId,
         roleId: payload.roleId,
         organizationId: payload.organizationId,
-        userRole: payload.userRole,
+        userRole: payload.userRole
     })
         // Set the signing algorithm to HS256.
         .setProtectedHeader({ alg: "HS256" })

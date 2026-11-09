@@ -98,6 +98,8 @@ export const POST = async (request: Request): Promise<NextResponse> => {
             userId: user_result.id,
             roleId: user_roles.id,
             organizationId: user_organization.id,
+            firstName: user_result.first_name,
+            lastName: user_result.last_name,
             userRole: user_roles.name,
             sessionId,
         }
