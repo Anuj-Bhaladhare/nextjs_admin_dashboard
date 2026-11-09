@@ -123,7 +123,7 @@
   }
 
   body {
-    @apply relative z-1 bg-gray-50 font-outfit font-normal;
+    @apply relative z-1 bg-gray-50 font-outfit font-normal dark:bg-gray-900;
   }
 }
 
