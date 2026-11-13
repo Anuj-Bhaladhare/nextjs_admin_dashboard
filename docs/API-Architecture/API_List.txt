@@ -1,0 +1,114 @@
+# =========================================================================
+# Module A – User Management APIs:
+    Base path: 
+        - /api/organizations/:organizationId/users
+    API:
+        - POST	    /	                    Create/invite a new organization user
+        - GET	    /	                    List organization users
+        - GET	    /:userId	            Get complete user details
+        - PATCH	    /:userId	            Update basic user information
+        - PATCH	    /:userId/status	        Change global account status, if authorized
+        - GET	    /:userId/activity	    Get user activity summary
+        - GET	    /:userId/audit-logs	    View administrative audit history
+        - POST	    /bulk	                Bulk create/invite users
+        - POST	    /export	                Export organization user data
+        - GET	    /export/:exportId	    Retrieve export job status/result
+
+
+
+
+
+# =========================================================================
+# Module B – Organization Membership APIs:
+    Base path:
+        - /api/organizations/:organizationId/users/:userId/membership
+    API:
+        GET	        /	            Get membership details
+        PATCH	    /	            Update membership information
+        PATCH	    /status	        Activate, suspend or deactivate membership
+        DELETE	    /	            Remove user from organization
+        GET	        /history	    View membership history
+
+
+
+# =========================================================================
+# Module C – Advanced Invitation Management APIs:
+    Base paths:
+        - Administrative: /api/organizations/:organizationId/invitations
+        - Public acceptance: /api/invitations
+    API:
+        POST	/api/organizations/:organizationId/invitations	                    Create and send invitation
+        GET	    /api/organizations/:organizationId/invitations	                    List organization invitations
+        GET	    /api/organizations/:organizationId/invitations/:invitationId	    Get invitation details
+        POST	/:invitationId/resend	                                            Resend invitation
+        POST	/:invitationId/revoke	                                            Revoke invitation
+        POST	/api/invitations/validate	                                        Validate invitation token
+        POST	/api/invitations/accept	                                            Accept invitation and complete onboarding
+        POST	/api/organizations/:organizationId/invitations/bulk	                Send multiple invitations
+
+
+
+# =========================================================================
+# Module D – Role & Permission Management APIs:
+    Base path:
+        - /api/organizations/:organizationId/users/:userId/roles
+    API:
+        GET	        /	            Get assigned roles
+        POST	    /	            Assign a role
+        PUT	        /	            Replace user role assignments
+        DELETE	    /:roleId	    Remove a role
+        GET	        /available	    List roles assignable by current admin
+        GET	        /history	    View role assignment history
+
+    Base path: 
+        - /api/rbac
+    API: 
+        GET	    /roles	                        List available roles
+        GET	    /roles/:roleId	                Get role details
+        GET	    /permissions	                List permissions
+        GET	    /roles/:roleId/permissions	    Get role permissions
+        PUT	    /roles/:roleId/permissions	    Update role permissions
+        GET	    /delegations	                View role delegation rules
+
+
+
+
+# =========================================================================
+# Module E – My Account APIs:
+    Base path:
+        - /api/users/me
+    API: 
+        GET	        /	                    Get current user
+        PATCH	    /	                    Update basic account information
+        GET	        /profile	            Get personal profile
+        PATCH	    /profile	            Update personal profile
+        PUT	        /avatar	                Upload or replace avatar
+        DELETE	    /avatar	                Remove avatar
+        PATCH	    /password	            Change own password
+        GET	        /organizations	        List user's organizations
+        GET	        /sessions	            List active sessions
+        DELETE	    /sessions/:sessionId	Revoke a particular session
+        DELETE	    /sessions	            Revoke all other sessions
+        GET	        /security	            Get account security information
+
+    Base path: 
+        - /api/auth
+    API:
+        POST	    /forgot-password	    Request password reset
+        POST	    /reset-password	        Reset password
+        POST	    /verify-email	        Verify email
+        POST	    /logout	                Logout current session
+        POST	    /logout-all	            Logout all sessions
+
+
+
+# =========================================================================
+# Module F – Audit & Activity APIs
+    Base path:
+        - /api/organizations/:organizationId/audit-logs
+    API:
+        GET	        /	            List organization audit logs
+        GET	        /:logId	        Get audit log details
+        POST	    /export	        Export audit history
+
+

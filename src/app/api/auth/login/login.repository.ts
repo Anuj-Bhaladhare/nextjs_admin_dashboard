@@ -1,7 +1,6 @@
 import { getPostgresPool } from "@/lib/db/client";
-import LoginResponse from "./login.response";
+import { jsonResponse } from "@/app/api/jsonResponse";
 
-const [{ jsonResponse }]= LoginResponse();  
 const pool = getPostgresPool();
 
 const LoginRepository = () => {
