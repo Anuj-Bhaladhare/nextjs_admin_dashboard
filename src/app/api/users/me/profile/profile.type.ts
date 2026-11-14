@@ -39,3 +39,9 @@ export interface UserProfile {
 
 }
 
+
+export interface CreateUserProfileResponse {
+    status: boolean;
+    message: string;
+    user_id: string | null;
+}
