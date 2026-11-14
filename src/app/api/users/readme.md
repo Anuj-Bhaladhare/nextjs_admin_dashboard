@@ -1,201 +1,138 @@
-Aapke existing Next.js folder structure ke according main ek clean aur scalable REST API structure recommend karunga.
+Bhai, tumhara existing folder structure dekhkar mujhe lag raha hai ki tumne already kaafi achha modular API structure banaya hai. Lekin ismein ek important improvement ki zaroorat hai: Admin ke user management APIs aur logged-in user ke self-profile APIs ko clearly separate rakhna.
 
-Mera suggestion hai ki User ID ko dynamic route mein rakho aur profile ke liye separate endpoint use karo.
+Chalo existing structure ko samajhte hain.
 
-## 1. Best API endpoint structure
+## 1. Tumhara current structure
 
 text
 
 ```text
-/api/users
+api/
+└── users/
+    ├── profile/
+    │   ├── profile.repository.ts
+    │   ├── profile.types.ts
+    │   ├── README.md
+    │   └── route.ts
+    │
+    ├── route.ts
+    │
+    └── [userId]/
+        ├── password/
+        │   └── route.ts
+        ├── profile/
+        │   ├── profile.repository.ts
+        │   ├── profile.response.ts
+        │   ├── profile.types.ts
+        │   └── route.ts
+        ├── route.ts
+        └── status/
+            └── route.ts
 ```
 
-| Method | Endpoint | Purpose |
-| --- | --- | --- |
-| GET | `/api/users` | Get all users |
-| POST | `/api/users` | Create new user |
-| GET | `/api/users/[userId]` | Get user by ID |
-| PUT | `/api/users/[userId]` | Full user update |
-| PATCH | `/api/users/[userId]` | Partial user update |
-| DELETE | `/api/users/[userId]` | Delete user |
-| GET | `/api/users/[userId]/profile` | Get user profile |
-| PUT | `/api/users/[userId]/profile` | Replace user profile |
-| PATCH | `/api/users/[userId]/profile` | Update profile fields |
-| PATCH | `/api/users/[userId]/status` | Update user status |
-| PATCH | `/api/users/[userId]/password` | Change password |
+Ismein mujhe ek potential confusion dikh raha hai:
 
-## 2. Recommended folder structure
+- `/users/profile` – Kiski profile?
+- `/users/[userId]/profile` – Specific user ki profile?
 
-Aap apne existing structure ko is tarah maintain karo:
+Dono ka purpose clearly define hona chahiye.
+
+## 2. Meri recommended API structure
+
+Main tumhare existing architecture ko completely change nahi karunga. Bas thoda organize karunga.
 
 text
 
 ```text
-src/app/api/users/
+src/app/api/
 │
-├── route.ts
-│
-├── [userId]/
+├── users/
 │   ├── route.ts
 │   │
-│   ├── profile/
-│   │   └── route.ts
+│   ├── me/
+│   │   ├── route.ts
+│   │   ├── profile/
+│   │   │   ├── route.ts
+│   │   │   ├── profile.repository.ts
+│   │   │   ├── profile.types.ts
+│   │   │   └── profile.response.ts
+│   │   │
+│   │   └── avatar/
+│   │       └── route.ts
 │   │
-│   ├── password/
-│   │   └── route.ts
-│   │
-│   └── status/
-│       └── route.ts
-│
-└── profile/
-    ├── profile.repository.ts
-    ├── profile.response.ts
-    └── profile.types.ts
+│   └── [userId]/
+│       ├── route.ts
+│       │
+│       ├── profile/
+│       │   ├── route.ts
+│       │   ├── profile.repository.ts
+│       │   ├── profile.types.ts
+│       │   └── profile.response.ts
+│       │
+│       ├── password/
+│       │   └── route.ts
+│       │
+│       └── status/
+│           └── route.ts
 ```
 
-Note: Agar `/api/users/profile` ka koi separate use nahi hai, toh existing `profile` folder ko `[userId]/profile` mein shift kar sakte ho.
+## 3. Kaunsi API kya kaam karegi?
 
-## 3. HTTP methods ka correct usage
-
-| Method | When to use |
-| --- | --- |
-| GET | Data fetch karna |
-| POST | New data create karna |
-| PUT | Complete resource replace/update karna |
-| PATCH | Specific fields update karna |
-| DELETE | Resource delete karna |
-
-Example:
-
-http
-
-```http
-GET    /api/users/123
-POST   /api/users
-PUT    /api/users/123
-PATCH  /api/users/123
-DELETE /api/users/123
-
-GET    /api/users/123/profile
-PUT    /api/users/123/profile
-PATCH  /api/users/123/profile
-```
-
-## 4. My final recommendation
-
-- User CRUD operations → `/api/users` and `/api/users/[userId]`
-- Profile operations → `/api/users/[userId]/profile`
-- Password operations → `/api/users/[userId]/password`
-- Status operations → `/api/users/[userId]/status`
-
-Isse API RESTful, maintainable aur scalable rahegi.
-
-One important security point: Profile, password aur status update karte waqt authentication aur authorization zaroor check karna. User ko sirf wahi data update karne dena jiski permission uske paas hai.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Good question\! Actually, `src/app/api/users/profile` tab useful hai jab aapko logged-in user ka profile fetch/update karna ho without passing userId in URL.
-
-Iske do approaches hain:
-
-## 1. `/api/users/profile` — My Profile
-
-Logged-in user ka profile fetch karne ke liye.
-
-| Method | Endpoint | Purpose |
+| API | Method | Purpose |
 | --- | --- | --- |
-| GET | `/api/users/profile` | Get my profile |
-| PATCH | `/api/users/profile` | Update my profile |
+| `/api/users` | GET | Users listing |
+| `/api/users` | POST | Create user |
+| `/api/users/me` | GET | Logged-in user details |
+| `/api/users/me/profile` | GET | Own profile fetch |
+| `/api/users/me/profile` | PUT | Own profile update |
+| `/api/users/me/avatar` | POST | Upload avatar |
+| `/api/users/[userId]` | GET | Specific user details |
+| `/api/users/[userId]` | PUT | Admin updates user |
+| `/api/users/[userId]/profile` | GET | Specific user's profile |
+| `/api/users/[userId]/profile` | PUT | Admin updates profile |
+| `/api/users/[userId]/password` | PATCH | Password management |
+| `/api/users/[userId]/status` | PATCH | Change account status |
 
-Example:
+## 4. Repository architecture
 
-http
+Ek important suggestion: `profile.repository.ts` ko business logic se separate rakho.
 
-```http
-GET /api/users/profile
-```
+For example:
 
-Backend mein authenticated user ki ID token/session se milegi.
+route.ts
 
-typescript
+HTTP request, authentication, validation and response
 
-```typescript
-const session = await auth();
+profile.service.ts
 
-const userId = session?.user?.id;
+Business logic and authorization rules
 
-// Fetch logged-in user's profile
-```
+profile.repository.ts
 
-## 2. `/api/users/[userId]/profile` — Specific User Profile
+Database queries and CRUD operations
 
-Jab kisi particular user ka profile ID se fetch/update karna ho.
+PostgreSQL
 
-| Method | Endpoint | Purpose |
-| --- | --- | --- |
-| GET | `/api/users/123/profile` | Get user profile |
-| PATCH | `/api/users/123/profile` | Update user profile |
+core.users + core.user\_profiles
 
-## 3. Final folder structure (Recommended)
+## 5. Kuch important design decisions
 
-text
+- `me` endpoint mein user ID authenticated session/token se lena, request body se nahi.
+- `[userId]` endpoints mein admin authorization check karna.
+- Password ko profile response mein kabhi include mat karna.
+- `users/me/profile` aur `users/[userId]/profile` dono same underlying profile service aur repository reuse kar sakte hain.
+- Avatar upload ke liye actual image storage (S3, Cloudinary etc.) use karna; database mein sirf URL/reference rakhna.
 
-```text
-src/app/api/users/
-│
-├── route.ts
-│
-├── profile/
-│   └── route.ts
-│
-└── [userId]/
-    ├── route.ts
-    ├── profile/
-    │   └── route.ts
-    ├── password/
-    │   └── route.ts
-    └── status/
-        └── route.ts
-```
+## 6. Final recommendation
 
-## 4. Dono mein difference
+Recommended Tumhare SecureGateControl project ke liye main ye separation rakhunga:
 
-| Feature | `/profile` | `/[userId]/profile` |
-| --- | --- | --- |
-| Profile | Logged-in user | Specific user |
-| User ID | Session se | URL se |
-| Authentication | Required | Required |
-| Use case | My Profile | Admin/User management |
+- `/api/users/me/*` → Logged-in user's own account.
+- `/api/users/[userId]/*` → Admin/user-management operations.
+- `/api/users` → User listing and creation.
 
-My recommendationDono routes rakho:
+Isse future mein permissions, profile management aur admin dashboard maintain karna kaafi easy ho jayega.
 
-- `/api/users/profile` → My Profile (current logged-in user).
-- `/api/users/[userId]/profile` → Specific User Profile (admin/user management).
+Ek architectural question: Tumhare project mein profile update karne ki permission sirf logged-in user ko hogi, ya Admin bhi kisi bhi user ka profile edit kar sakega?
 
-Important: `[userId]` wale endpoint par authorization check zaroor lagana, taaki koi user doosre user ka private profile access ya update na kar sake.
+Iska answer decide karega ki profile APIs ko kaise organize karna sabse sahi rahega.

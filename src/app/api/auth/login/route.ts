@@ -8,10 +8,9 @@ import { hashAccessToken } from "@/lib/auth/session";
 import { ACCESS_TOKEN_COOKIE, ACCESS_TOKEN_MAX_AGE } from "@/lib/auth/cookie";
 
 import LoginRepository from "./login.repository";
-import LoginResponse from "./login.response";
 import { LoginBody } from "./login.types";
+import { jsonResponse } from "@/app/api/jsonResponse";
  
-const [{ jsonResponse }]= LoginResponse();  
 const [{ getUserByEmail, getUserRoleByUserID, getUserRoleByUserRoleID, getOrganizationByOrganizationID }] = LoginRepository();
 
 export const POST = async (request: Request): Promise<NextResponse> => {
