@@ -16,6 +16,8 @@ export const metadata: Metadata = {
   description: "Sign in to your Smart Gate Monitoring workspace.",
 };
 
+export const instant = false;
+
 interface DashboardLayoutProps {
   children: ReactNode
 }
@@ -25,6 +27,8 @@ async function DashboardAuth({
 }: DashboardLayoutProps) {
   const session = await getCurrentUser();
   const messages = await getMessages();
+
+  console.log("session =======>", session);
 
   if ( !session ) {
     redirect("/login");

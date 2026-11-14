@@ -1,11 +1,12 @@
 import relayService from "@/axios/hook";
+import { API_ENDPOINTS } from "@/constants/apiEndpoints";
 
 const useLogin = () => {
 
     const handleSubmitLoginForm = async (email: string, password: string) => {
         const response = await relayService({
-            url: "/api/auth/login",
-            method: "POST",
+            url: API_ENDPOINTS.AUTH.LOGIN.url,
+            method: API_ENDPOINTS.AUTH.LOGIN.method,
             data: {
                 email: email,
                 password: password
