@@ -1,6 +1,8 @@
 import { useCallback } from "react";
 import relayService from "@/axios/hook";
+import { API_ENDPOINTS } from "@/constants/apiEndpoints";
 import { CurrentUser, CurrentUserResponse } from "./type";
+
 
 const useUserDropdown = () => {
 
@@ -8,8 +10,8 @@ const useUserDropdown = () => {
         try {
 
             const response = await relayService<CurrentUserResponse>({
-                url: "/api/auth/me",
-                method: 'GET'
+                url: API_ENDPOINTS.AUTH.ME.url,
+                method: API_ENDPOINTS.AUTH.ME.method
             })
 
             return response?.data?.status ? response?.data?.user : null;
@@ -17,6 +19,7 @@ const useUserDropdown = () => {
         } catch (error) {
             throw error;
         }
+        
     }, []);
 
     return [{ getCurrentUser }] as const;

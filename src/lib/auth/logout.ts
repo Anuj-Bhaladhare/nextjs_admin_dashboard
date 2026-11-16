@@ -21,39 +21,3 @@ export const logout = async () => {
 
     redirect("/login");
 };
-
-
-
-
-
-
-
-// "use server";
-
-// import relayservice from "@/axios/hook"
-// import { redirect } from "next/navigation";
-
-// interface LogoutBody {
-//     status: boolean;
-//     message: string;
-// }
-
-// export const logout = async () => {
-//     try {
-
-//         const response = await relayservice<LogoutBody>({
-//             url: "/api/auth/logout",
-//             method: "POST"
-//         })
-
-//         if ( !response?.data?.status ) {
-//             throw new Error(response?.data?.message || "Logout failed.");
-//         } 
-
-//     } catch (error) {
-//         throw error;
-//     }
-
-//     redirect("/login");
-
-// }

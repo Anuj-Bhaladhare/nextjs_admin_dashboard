@@ -16,6 +16,8 @@ export const metadata: Metadata = {
   description: "Sign in to your Smart Gate Monitoring workspace.",
 };
 
+export const instant = false;
+
 interface DashboardLayoutProps {
   children: ReactNode
 }

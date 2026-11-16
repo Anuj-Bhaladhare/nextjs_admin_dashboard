@@ -75,9 +75,9 @@
     API: 
         GET	        /	                    Get current user
         PATCH	    /	                    Update basic account information
-        POST	    /profile	            Create first time Profile
-        GET	        /profile	            Get personal profile
-        PATCH	    /profile	            Update personal profile
+        POST	    /profile-Done	            Create first time Profile
+        GET	        /profile-Done	            Get personal profile
+        PATCH	    /profile-Done	            Update personal profile
         PUT	        /avatar	                Upload or replace avatar
         DELETE	    /avatar	                Remove avatar
         PATCH	    /password	            Change own password
