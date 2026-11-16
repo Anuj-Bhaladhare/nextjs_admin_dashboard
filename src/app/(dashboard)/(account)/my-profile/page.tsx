@@ -1,7 +1,8 @@
 "use client";
 
-// import React, { useState, useEffect } from "react";
-// import useMyProfileHook from "./hook";
+import React, { useState, useEffect } from "react";
+import useMyProfileHook from "./hook";
+import { UserProfile } from "./types";
 
 import {
     CalendarDays,
@@ -81,16 +82,55 @@ function ProfileField({ label, value, icon: Icon }: ProfileFieldProps) {
     );
 }
 
+const initialValue = { 
+    user_id: "",
+    display_name: "",
+    bio: "",
+    avatar_url: "",
+    cover_image_url: "",
+    date_of_birth: "",
+    gender: "",
+    alternate_email: "",
+    alternate_mobile: "",
+    address_line_1: "",
+    address_line_2: "",
+    city: "",
+    state: "",
+    country: "",
+    postal_code: "",
+    website_url: "",
+    linkedin_url: "",
+    twitter_url: "",
+    timezone: "",
+    locale: "en-IN",
+    preferences: {},
+    is_public: false
+}
+
 export default function MyProfilePage() {
 
-    // const [{ getMyProfileDetails }] = useMyProfileHook();
+    const [{ getMyProfileDetails }] = useMyProfileHook();
+    const [ profileInitialValue, setProfileInitialValue ] = useState<UserProfile>(initialValue);
 
-    // useEffect( () => {
+    const fetchProfileData = async () => {
+        try {
+            const result = await getMyProfileDetails();
+            
+            if (result) {
+                setProfileInitialValue( (prev) => ({
+                    ...prev,
+                    ...result
+                }));
+            }
 
-    //     getMyProfileDetails();
+        } catch (error) {
+            throw error;
+        }
+    }
 
-    // }, []);
-
+    useEffect( () => {
+        fetchProfileData();
+    }, [getMyProfileDetails]);
 
 
     return (
@@ -133,7 +173,7 @@ export default function MyProfilePage() {
                             <div className="pb-1">
                                 <div className="flex flex-wrap items-center gap-2">
                                     <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
-                                        Add your display name
+                                        {profileInitialValue.display_name}
                                     </h2>
                                     <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 dark:bg-white/10 dark:text-gray-300">
                                         <ShieldCheck className="size-3.5" aria-hidden="true" />
@@ -141,7 +181,7 @@ export default function MyProfilePage() {
                                     </span>
                                 </div>
                                 <p className="mt-1 max-w-xl text-sm text-gray-500 dark:text-gray-400">
-                                    Add a short bio to tell others a little about you.
+                                    {profileInitialValue.bio}
                                 </p>
                             </div>
                         </div>
@@ -158,10 +198,10 @@ export default function MyProfilePage() {
                     description="Your name, introduction, and profile images."
                     icon={UserRound}
                 >
-                    <ProfileField label="Display name" value="Not provided" icon={UserRound} />
-                    <ProfileField label="Bio" value="Not provided" icon={FileText} />
-                    <ProfileField label="Avatar image" value="Not provided" icon={UserRound} />
-                    <ProfileField label="Cover image" value="Not provided" icon={FileText} />
+                    <ProfileField label="Display name" value={profileInitialValue.display_name ?? "Not provided"} icon={UserRound} />
+                    <ProfileField label="Bio" value={profileInitialValue.bio ?? "Not provided"} icon={FileText} />
+                    <ProfileField label="Avatar image" value={profileInitialValue.avatar_url ?? "Not provided"} icon={UserRound} />
+                    <ProfileField label="Cover image" value={profileInitialValue.cover_image_url ?? "Not provided"} icon={FileText} />
                 </ProfileSection>
 
                 <ProfileSection
@@ -169,8 +209,8 @@ export default function MyProfilePage() {
                     description="Additional information about you."
                     icon={CalendarDays}
                 >
-                    <ProfileField label="Date of birth" value="Not provided" icon={CalendarDays} />
-                    <ProfileField label="Gender" value="Not provided" icon={UserRound} />
+                    <ProfileField label="Date of birth" value={profileInitialValue?.date_of_birth?.split("T")[0].split("-").reverse().join("/") ?? "Not provided"} icon={CalendarDays} />
+                    <ProfileField label="Gender" value={profileInitialValue.gender ?? "Not provided"} icon={UserRound} />
                 </ProfileSection>
 
                 <ProfileSection
@@ -178,14 +218,14 @@ export default function MyProfilePage() {
                     description="Alternative ways to reach you and your location."
                     icon={MapPin}
                 >
-                    <ProfileField label="Alternate email" value="Not provided" icon={Mail} />
-                    <ProfileField label="Alternate mobile" value="Not provided" icon={Phone} />
-                    <ProfileField label="Address line 1" value="Not provided" icon={MapPin} />
-                    <ProfileField label="Address line 2" value="Not provided" icon={MapPin} />
-                    <ProfileField label="City" value="Not provided" icon={MapPin} />
-                    <ProfileField label="State" value="Not provided" icon={MapPin} />
-                    <ProfileField label="Country" value="Not provided" icon={Globe} />
-                    <ProfileField label="Postal code" value="Not provided" icon={MapPin} />
+                    <ProfileField label="Alternate email" value={profileInitialValue?.alternate_email ?? "Not provided"} icon={Mail} />
+                    <ProfileField label="Alternate mobile" value={profileInitialValue?.alternate_mobile ?? "Not provided"} icon={Phone} />
+                    <ProfileField label="Address line 1" value={profileInitialValue?.address_line_1 ?? "Not provided"} icon={MapPin} />
+                    <ProfileField label="Address line 2" value={profileInitialValue?.address_line_2 ?? "Not provided"} icon={MapPin} />
+                    <ProfileField label="City" value={profileInitialValue?.city ?? "Not provided"} icon={MapPin} />
+                    <ProfileField label="State" value={profileInitialValue?.state ?? "Not provided"} icon={MapPin} />
+                    <ProfileField label="Country" value={profileInitialValue?.country ?? "Not provided"} icon={Globe} />
+                    <ProfileField label="Postal code" value={profileInitialValue?.postal_code ?? "Not provided"} icon={MapPin} />
                 </ProfileSection>
 
                 <div className="space-y-6">
@@ -194,9 +234,9 @@ export default function MyProfilePage() {
                         description="Links to your website and social profiles."
                         icon={Link2}
                     >
-                        <ProfileField label="Website" value="Not provided" icon={Globe} />
-                        <ProfileField label="LinkedIn" value="Not provided" icon={Link2} />
-                        <ProfileField label="Twitter / X" value="Not provided" icon={Link2} />
+                        <ProfileField label="Website" value={profileInitialValue?.website_url ?? "Not provided"} icon={Globe} />
+                        <ProfileField label="LinkedIn" value={profileInitialValue?.linkedin_url ?? "Not provided"} icon={Link2} />
+                        <ProfileField label="Twitter / X" value={profileInitialValue?.twitter_url ?? "Not provided"} icon={Link2} />
                     </ProfileSection>
 
                     <ProfileSection
@@ -204,8 +244,8 @@ export default function MyProfilePage() {
                         description="Your regional settings and profile visibility."
                         icon={SlidersHorizontal}
                     >
-                        <ProfileField label="Timezone" value="UTC" icon={Clock3} />
-                        <ProfileField label="Locale" value="en" icon={Languages} />
+                        <ProfileField label="Timezone" value={ profileInitialValue?.timezone ?? "UTC" } icon={Clock3} />
+                        <ProfileField label="Locale" value={ profileInitialValue?.locale ?? "en" } icon={Languages} />
                         <ProfileField label="Preferences" value="No custom preferences" icon={SlidersHorizontal} />
                         <ProfileField label="Visibility" value="Private" icon={ShieldCheck} />
                     </ProfileSection>
@@ -237,4 +277,5 @@ export default function MyProfilePage() {
             </section>
         </main>
     );
+
 }

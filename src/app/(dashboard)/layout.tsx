@@ -28,8 +28,6 @@ async function DashboardAuth({
   const session = await getCurrentUser();
   const messages = await getMessages();
 
-  console.log("session =======>", session);
-
   if ( !session ) {
     redirect("/login");
   }

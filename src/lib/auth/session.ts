@@ -16,8 +16,6 @@ export async function getCurrentUser() {
 
     const token = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
 
-    console.log("Token:", token);
-
     if (!token) {
         return null;
     }

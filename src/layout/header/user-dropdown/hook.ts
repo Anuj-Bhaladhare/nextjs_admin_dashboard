@@ -10,8 +10,8 @@ const useUserDropdown = () => {
         try {
 
             const response = await relayService<CurrentUserResponse>({
-                url: API_ENDPOINTS.AUTH.LOGOUT.url,
-                method: API_ENDPOINTS.AUTH.LOGOUT.method
+                url: API_ENDPOINTS.AUTH.ME.url,
+                method: API_ENDPOINTS.AUTH.ME.method
             })
 
             return response?.data?.status ? response?.data?.user : null;
@@ -19,6 +19,7 @@ const useUserDropdown = () => {
         } catch (error) {
             throw error;
         }
+        
     }, []);
 
     return [{ getCurrentUser }] as const;
