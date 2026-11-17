@@ -1,11 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
 import { jsonResponse } from "@/app/api/jsonResponse";
-import OrganizationRepository from "./route.repository";
+import { OrganizationBody } from "./organizations.types";
+import OrganizationRepository from "./organizations.repository";
 
-const [{ getOrganization }] = OrganizationRepository();
+const [{ getOrganization, createOrganization }] = OrganizationRepository();
 
-
-yah wali saari API complete karo pahale -> OK
 
 // List organizations accessible to caller
 export const GET = async ( 
@@ -13,6 +12,8 @@ export const GET = async (
 ): Promise<NextResponse> => {
 
     try{
+
+        // User Authentication Pending
 
         const result = await getOrganization();
 
@@ -48,20 +49,51 @@ export const GET = async (
 
 }
 
-
 // Create organization
 export const POST = async (
     request: NextRequest
 ): Promise<NextResponse> => {
     try{
+      
+        let org_body: OrganizationBody;
+        try {
+            org_body = await request.json();
+        } catch (e) {
+            throw e;
+        }
+
+        const { name, code, description, status } = org_body;
+        if ( !name || !code || !description || !status ) {
+            return jsonResponse(
+                {
+                    status: false,
+                    message: "Please Provide Organization Details to Create Organization"
+                }, 
+                404
+            );
+        }
+
+        const org_result = await createOrganization(
+            {name, code, description, status}
+        );
+
+        if (org_result) {
+            return jsonResponse(
+                {
+                    status: true,
+                    message: "Organizations Created successfully",
+                    data: org_result
+                }, 
+                200
+            );
+        } 
 
         return jsonResponse(
             {
-                status: true,
-                message: "Organizations retrieved successfully",
-                data: []
-            }, 
-            200
+                status: false,
+                message: "Organization Not Create...!"
+            },
+            400
         );
 
     } catch (error) {
