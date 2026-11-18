@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { jsonResponse } from "@/app/api/jsonResponse";
+import { getCurrentUser } from "@/lib/auth/session";
 import { getPostgresPool } from "@/lib/db/client";
 
 const pool = getPostgresPool();
@@ -19,15 +20,59 @@ export interface OrganizationMember {
     updated_at: Date;
 }
 
+const ensureOrganizationAccess = async (userId: string, organizationId: string) => {
+    const access = await pool.query(
+        `
+            SELECT 1
+            FROM core.user_organizations
+            WHERE user_id = $1
+              AND organization_id = $2
+              AND membership_status = 'ACTIVE'
+            LIMIT 1;
+        `,
+        [userId, organizationId]
+    );
 
-// Get organization members
+    return access.rowCount !== null && access.rowCount > 0;
+};
+
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ organizationId: string }> }
 ): Promise<NextResponse> {
     try {
+        const user = await getCurrentUser();
+        if (!user) {
+            return jsonResponse(
+                {
+                    status: false,
+                    message: "Unauthorized."
+                },
+                401
+            );
+        }
 
         const { organizationId } = await params;
+        if (!organizationId) {
+            return jsonResponse(
+                {
+                    status: false,
+                    message: "Organization id is required."
+                },
+                400
+            );
+        }
+
+        const hasAccess = await ensureOrganizationAccess(user.id, organizationId);
+        if (!hasAccess) {
+            return jsonResponse(
+                {
+                    status: false,
+                    message: "Forbidden: user does not have access to this organization."
+                },
+                403
+            );
+        }
 
         const result = await pool.query(
             `SELECT
@@ -61,11 +106,9 @@ export async function GET(
             },
             200
         );
-
     } catch (error) {
-
         console.error(
-            "GET /api/organizations/{organizationId} error:",
+            "GET /api/organizations/{organizationId}/members error:",
             error
         );
 

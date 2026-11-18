@@ -1,70 +1,102 @@
 import { NextResponse, NextRequest } from "next/server";
 import { jsonResponse } from "@/app/api/jsonResponse";
+import { getCurrentUser } from "@/lib/auth/session";
 import { getPostgresPool } from "@/lib/db/client";
 
 const pool = getPostgresPool();
 
-// Database Request
-const update_DB_Status = async ( id: string, status: string )  => {
+const ensureOrganizationAccess = async (userId: string, organizationId: string) => {
+    const access = await pool.query(
+        `
+            SELECT 1
+            FROM core.user_organizations
+            WHERE user_id = $1
+              AND organization_id = $2
+              AND membership_status = 'ACTIVE'
+            LIMIT 1;
+        `,
+        [userId, organizationId]
+    );
+
+    return access.rowCount !== null && access.rowCount > 0;
+};
+
+const update_DB_Status = async (id: string, status: string) => {
     try {
         const response = await pool.query(
             `
                 UPDATE core.organizations
-                SET status = $1
+                SET status = $1,
+                    updated_at = NOW()
                 WHERE id = $2
-                RETURNING id;
-            `, [status, id]
+                RETURNING *;
+            `,
+            [status, id]
         );
 
-        if ( response?.rows?.length === 0 || response?.rowCount === 0 ) {
-            return jsonResponse(
-                {
-                    status: false,
-                    message: `Organization Status of ${id} is Not Update...!`
-                },
-                404
-            );
-        } 
+        if (response?.rows?.length === 0 || response?.rowCount === 0) {
+            return null;
+        }
 
-        return response?.rows;
-
+        return response.rows[0];
     } catch (error) {
         throw error;
     }
-}
+};
 
-
-// API =================================================================
 export const PATCH = async (
     request: NextRequest,
-    { params }: { params: {organizationId: string} }
+    { params }: { params: Promise<{ organizationId: string }> }
 ): Promise<NextResponse> => {
     try {
+        const user = await getCurrentUser();
+        if (!user) {
+            return jsonResponse(
+                {
+                    status: false,
+                    message: "Unauthorized."
+                },
+                401
+            );
+        }
+
         const { organizationId } = await params;
         if (!organizationId) {
             return jsonResponse(
                 {
                     status: false,
                     message: "Organizations id Not Found id Params"
-                }, 
-                404
+                },
+                400
             );
         }
 
-        let body: {status: string};
-        try {
-            body = await request.json()  
-        } catch (e) {
-            throw e;
-        }
-        const { status } = body;
-        if ( !status ) {
+        const hasAccess = await ensureOrganizationAccess(user.id, organizationId);
+        if (!hasAccess) {
             return jsonResponse(
                 {
                     status: false,
-                    message: "Organizations Status Not found Body"
-                }, 
-                404
+                    message: "Forbidden: user does not have access to this organization."
+                },
+                403
+            );
+        }
+
+        let body: { status: string };
+        try {
+            body = await request.json();
+        } catch (e) {
+            throw e;
+        }
+
+        const { status } = body;
+        if (!status || !["ACTIVE", "INACTIVE", "SUSPENDED"].includes(status)) {
+            return jsonResponse(
+                {
+                    status: false,
+                    message: "Organization status must be one of ACTIVE, INACTIVE, or SUSPENDED."
+                },
+                400
             );
         }
 
@@ -73,8 +105,8 @@ export const PATCH = async (
             return jsonResponse(
                 {
                     status: false,
-                    message: "Organizations status is Not Update"
-                }, 
+                    message: "Organization status could not be updated."
+                },
                 400
             );
         }
@@ -82,20 +114,19 @@ export const PATCH = async (
         return jsonResponse(
             {
                 status: true,
-                message: "Organizations status Update Successfull",
+                message: "Organization status updated successfully",
                 data: result
-            }, 
-            400
+            },
+            200
         );
-
     } catch (error) {
         console.error("PATCH /api/organizations/{organizationId}/status error: ", error);
         return jsonResponse(
-            {  
-                status: false, 
+            {
+                status: false,
                 message: "Internal Server Error",
             },
             500
         );
     }
-}
+};

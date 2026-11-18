@@ -1,32 +1,72 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getPostgresPool } from "@/lib/db/client";
 import { NextRequest, NextResponse } from "next/server";
 import { ParamsData, OrganizationData } from "./types";
 import OrganizationDetailsRepository from "./repository";
 
+const pool = getPostgresPool();
 const [{ getOrganizationDetails, updateOrganizationDetails }] = OrganizationDetailsRepository();
 
+const ensureOrganizationAccess = async (userId: string, organizationId: string) => {
+    const access = await pool.query(
+        `
+            SELECT 1
+            FROM core.user_organizations
+            WHERE user_id = $1
+              AND organization_id = $2
+              AND membership_status = 'ACTIVE'
+            LIMIT 1;
+        `,
+        [userId, organizationId]
+    );
+
+    return access.rowCount !== null && access.rowCount > 0;
+};
+
 // Get organization details
-export const GET = async ( 
+export const GET = async (
     request: NextRequest,
     { params }: { params: Promise<ParamsData> }
 ): Promise<NextResponse> => {
     try {
+        const user = await getCurrentUser();
+        if (!user) {
+            return jsonResponse(
+                {
+                    status: false,
+                    message: "Unauthorized."
+                },
+                401
+            );
+        }
 
         const { organizationId } = await params;
 
         if (!organizationId) {
-            return jsonResponse (
-                {  
-                    status: false, 
+            return jsonResponse(
+                {
+                    status: false,
                     message: "Provide Organization Id In Params"
                 },
-                404
+                400
             );
         }
 
-        const result = await getOrganizationDetails({id: organizationId})
-         
-        if ( !result ) {
+        const hasAccess = await ensureOrganizationAccess(user.id, organizationId);
+        if (!hasAccess) {
+            return jsonResponse(
+                {
+                    status: false,
+                    message: "Forbidden: user does not have access to this organization."
+                },
+                403
+            );
+        }
+
+        const result = await getOrganizationDetails({ id: organizationId });
+
+        if (!result) {
             return jsonResponse(
                 {
                     status: false,
@@ -37,49 +77,66 @@ export const GET = async (
             );
         }
 
-        return jsonResponse (
-            {  
-                status: true, 
+        return jsonResponse(
+            {
+                status: true,
                 message: "Organization Details Get Successfully",
-                organizationId: result
+                data: result
             },
             200
         );
-    
     } catch (error) {
         console.error("GET /api/organizations/{organizationId} error: ", error);
         return jsonResponse(
-            {  
-                status: false, 
+            {
+                status: false,
                 message: "Internal Server Error",
             },
             500
         );
     }
-}
-
+};
 
 // Update organization
 export const PATCH = async (
     request: NextRequest,
     { params }: { params: Promise<ParamsData> }
 ): Promise<NextResponse> => {
-    try{
+    try {
+        const user = await getCurrentUser();
+        if (!user) {
+            return jsonResponse(
+                {
+                    status: false,
+                    message: "Unauthorized."
+                },
+                401
+            );
+        }
 
-        // Get Data from Params
         const { organizationId } = await params;
         if (!organizationId) {
             return jsonResponse(
                 {
                     status: false,
                     message: "Organizations id Not Found id Params"
-                }, 
-                404
+                },
+                400
             );
         }
-        
-        // Get Data from Request Body
-        let org_body: OrganizationData;
+
+        const hasAccess = await ensureOrganizationAccess(user.id, organizationId);
+        if (!hasAccess) {
+            return jsonResponse(
+                {
+                    status: false,
+                    message: "Forbidden: user does not have access to this organization."
+                },
+                403
+            );
+        }
+
+        let org_body: Partial<OrganizationData>;
         try {
             org_body = await request.json();
         } catch (e) {
@@ -87,47 +144,50 @@ export const PATCH = async (
         }
 
         const { name, code, description, status } = org_body;
-        if ( !name || !code || !description || !status ) {
+        if (!name && !code && !description && !status) {
             return jsonResponse(
                 {
                     status: false,
-                    message: "Organizations Details Not Foound"
-                }, 
-                404
+                    message: "No organization fields were provided for update."
+                },
+                400
             );
         }
 
-        const org_result = await updateOrganizationDetails(
-            { id: organizationId, name, code, description, status }
-        );
+        const org_result = await updateOrganizationDetails({
+            id: organizationId,
+            name: name ?? null,
+            code: code ?? null,
+            description: description ?? null,
+            status: status ?? null,
+        });
 
         if (org_result) {
             return jsonResponse(
                 {
                     status: true,
-                    message: "Organizations Update successfully",
+                    message: "Organization updated successfully",
                     data: org_result
-                }, 
+                },
                 200
             );
-        } 
+        }
 
         return jsonResponse(
             {
                 status: false,
-                message: "Organization Not Update...!"
+                message: "Organization could not be updated."
             },
             404
         );
-
     } catch (error) {
         console.error("PATCH /api/organizations/{organizationId} error: ", error);
         return jsonResponse(
-            {  
-                status: false, 
+            {
+                status: false,
                 message: "Internal Server Error",
             },
             500
         );
     }
-}
+};

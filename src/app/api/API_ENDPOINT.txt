@@ -1,0 +1,17 @@
+
+
+
+
+*************** ORGANIZATION MANAGEMENT ****************
+# src/app/api/organizations:  -> 
+    Method	        Endpoint	                    Responsibility
+    POST-> Done     /	                            Create organization
+    GET	-> Done     /	                            List organizations accessible to caller
+    GET	-> Done     /{organizationId}	            Get organization details
+    PATCH -> Done   /{organizationId}	            Update organization
+    PATCH -> Done   /{organizationId}/status	    Activate, deactivate or suspend
+    GET	-> Done     /{organizationId}/settings	    Get settings
+    PUT	-> Done     /{organizationId}/settings	    Update settings
+    GET	-> Done     /{organizationId}/members	    List organization members
+    GET	-> Done     /{organizationId}/statistics	Organization summary
+
