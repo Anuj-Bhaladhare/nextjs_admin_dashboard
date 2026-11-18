@@ -1,3 +1,6 @@
+"use client";
+import { useRouter } from 'next/navigation';
+
 import {
   Building2,
   CalendarDays,
@@ -215,6 +218,9 @@ function StatGroup({
 }
 
 export default function OrganizationManagementPage() {
+
+    const router = useRouter();
+
   return (
     <main className="space-y-6 text-gray-800 dark:text-white/90">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -229,6 +235,7 @@ export default function OrganizationManagementPage() {
         </div>
         <button
           type="button"
+          onClick={ () => router.push('/organization-management/create-organization') }
           className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-700 sm:self-auto"
         >
           <Plus className="size-4" aria-hidden="true" />
@@ -411,6 +418,7 @@ export default function OrganizationManagementPage() {
         </div>
         <div className="flex flex-col gap-3 border-t border-gray-100 px-5 py-4 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-gray-800 dark:text-gray-400">
           <span>Showing 4 of 4 organizations</span>
+          <button onClick={ () => router.push("/organization-management/organization-datatable") }>Organization</button>
           <span>Sample records · No live data loaded</span>
         </div>
       </section>
