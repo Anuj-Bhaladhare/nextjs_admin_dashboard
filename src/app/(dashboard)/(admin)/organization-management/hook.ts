@@ -24,8 +24,6 @@ const useOrganizationManagement = () => {
                 return [];
             }
 
-            console.log("response =====>  ", response)
-
             const organizations = response.data.data ?? [];
 
             dispatch(setOrganizations(organizations));

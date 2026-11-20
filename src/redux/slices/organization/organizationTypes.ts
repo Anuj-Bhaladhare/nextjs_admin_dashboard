@@ -4,7 +4,8 @@ export interface Organization {
     name: string;
     code: string;
     description: string;
-    status: string;
+    members: number;
+    status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
     created_at: string;
     updated_at: string;
 }

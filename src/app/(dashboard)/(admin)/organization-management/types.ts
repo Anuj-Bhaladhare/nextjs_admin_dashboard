@@ -1,10 +1,11 @@
 
 export interface Organization {
-id: string;
+    id: string;
     name: string;
     code: string;
     description: string;
-    status: string;
+    members: number;
+    status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
     created_at: string;
     updated_at: string;
 }

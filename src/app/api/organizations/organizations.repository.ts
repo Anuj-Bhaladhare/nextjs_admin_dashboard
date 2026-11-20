@@ -8,7 +8,16 @@ const OrganizationRepository = () => {
     const getOrganization = async () => {
         try {
             const response = await pool.query(
-                ` SELECT * FROM core.organizations;`
+                `
+                SELECT
+                    o.*,
+                    COUNT(uo.user_id)::INTEGER AS members
+                FROM core.organizations AS o
+                LEFT JOIN core.user_organizations AS uo
+                    ON uo.organization_id = o.id
+                GROUP BY o.id
+                ORDER BY o.created_at DESC;
+                `
             );
 
             return response?.rows ?? [];
