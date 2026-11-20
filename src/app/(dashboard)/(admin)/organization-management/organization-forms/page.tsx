@@ -418,6 +418,7 @@ function FormPanel({
 }
 
 export default function OrganizationFormsPage() {
+    
   const [activeTab, setActiveTab] = useState<FormTab>("organization");
 
   return (
@@ -484,4 +485,5 @@ export default function OrganizationFormsPage() {
       ))}
     </main>
   );
+
 }

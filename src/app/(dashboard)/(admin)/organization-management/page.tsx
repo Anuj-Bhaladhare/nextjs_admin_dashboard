@@ -1,19 +1,17 @@
+"use client";
+import { useEffect } from "react";
+import { useRouter } from 'next/navigation';
+import { Building2, CalendarDays, Check, ChevronDown, Clock3, Ellipsis, Mail, Pencil, Plus, Search, Settings2, ShieldCheck, UserRound, UsersRound } from "lucide-react";
+import useOrganizationManagement from "./hook";
+// Redux State Management
+import { useAppSelector } from "@/redux/hooks";
 import {
-  Building2,
-  CalendarDays,
-  Check,
-  ChevronDown,
-  Clock3,
-  Ellipsis,
-  Mail,
-  Pencil,
-  Plus,
-  Search,
-  Settings2,
-  ShieldCheck,
-  UserRound,
-  UsersRound,
-} from "lucide-react";
+    selectTotalOrganizations,
+    selectActiveOrganizations,
+    selectSuspendedOrganizations,
+    selectInactiveOrganizations
+} from "@/redux/slices/organization/organizationSelectors";
+
 
 type OrganizationStatus = "Active" | "Inactive" | "Suspended";
 type MemberStatus = "ACTIVE" | "INVITED" | "DISABLED" | "LOCKED";
@@ -215,6 +213,26 @@ function StatGroup({
 }
 
 export default function OrganizationManagementPage() {
+
+  const [{ getOrganizations }] = useOrganizationManagement();
+
+  // Enable Next Routing
+  const router = useRouter();
+  // Get Organization State
+  const organization = useAppSelector( (state) => { return state.organization.organization });
+
+
+
+  useEffect(() => {
+    getOrganizations().catch((e) => {
+      console.log(e);
+    });
+
+  }, [getOrganizations]);
+
+  console.log("organization", organization);
+
+
   return (
     <main className="space-y-6 text-gray-800 dark:text-white/90">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -229,6 +247,7 @@ export default function OrganizationManagementPage() {
         </div>
         <button
           type="button"
+          onClick={ () => router.push('/organization-management/create-organization') }
           className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-700 sm:self-auto"
         >
           <Plus className="size-4" aria-hidden="true" />
@@ -243,7 +262,7 @@ export default function OrganizationManagementPage() {
         {[
           {
             label: "Organizations",
-            value: "4",
+            value: organization.length ?? 0,
             detail: "Accessible to you",
             icon: Building2,
             iconClass:
@@ -251,7 +270,7 @@ export default function OrganizationManagementPage() {
           },
           {
             label: "Active",
-            value: "2",
+            value: organization.filter( (item) => item.status === "ACTIVE").length ?? 0,
             detail: "Available for access",
             icon: ShieldCheck,
             iconClass:
@@ -259,7 +278,7 @@ export default function OrganizationManagementPage() {
           },
           {
             label: "Suspended",
-            value: "1",
+            value: organization.filter( (item) => item.status === "SUSPENDED").length ?? 0,
             detail: "Temporarily restricted",
             icon: Clock3,
             iconClass:
@@ -411,6 +430,7 @@ export default function OrganizationManagementPage() {
         </div>
         <div className="flex flex-col gap-3 border-t border-gray-100 px-5 py-4 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-gray-800 dark:text-gray-400">
           <span>Showing 4 of 4 organizations</span>
+          <button onClick={ () => router.push("/organization-management/organization-datatable") }>Organization</button>
           <span>Sample records · No live data loaded</span>
         </div>
       </section>
@@ -652,4 +672,5 @@ export default function OrganizationManagementPage() {
       </section>
     </main>
   );
+
 }

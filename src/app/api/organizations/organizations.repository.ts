@@ -4,19 +4,11 @@ import { OrganizationBody } from "./organizations.types";
 const pool = getPostgresPool();
 
 const OrganizationRepository = () => {
-    const getOrganization = async (userId: string) => {
+    
+    const getOrganization = async () => {
         try {
             const response = await pool.query(
-                `
-                    SELECT o.*
-                    FROM core.organizations o
-                    INNER JOIN core.user_organizations uo
-                        ON uo.organization_id = o.id
-                    WHERE uo.user_id = $1
-                      AND uo.membership_status = 'ACTIVE'
-                    ORDER BY o.created_at DESC;
-                `,
-                [userId]
+                ` SELECT * FROM core.organizations;`
             );
 
             return response?.rows ?? [];

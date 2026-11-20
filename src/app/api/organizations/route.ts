@@ -6,7 +6,7 @@ import OrganizationRepository from "./organizations.repository";
 
 const [{ getOrganization, createOrganization }] = OrganizationRepository();
 
-// List organizations accessible to caller
+// Get all List of organizations
 export const GET = async (): Promise<NextResponse> => {
     try {
         const user = await getCurrentUser();
@@ -20,7 +20,7 @@ export const GET = async (): Promise<NextResponse> => {
             );
         }
 
-        const result = await getOrganization(user.id);
+        const result = await getOrganization();
 
         if (Array.isArray(result) && result.length > 0) {
             return jsonResponse(
