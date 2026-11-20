@@ -48,7 +48,7 @@ const columns: GridColDef<OrganizationRow>[] = [
           <p className="truncate text-sm font-semibold text-gray-800 dark:text-white/90">
             {row.name}
           </p>
-          <p className="mt-1 truncate font-mono text-[11px] text-gray-500 dark:text-gray-400">
+          <p className="mt-0.5 truncate font-mono text-[11px] leading-4 text-gray-500 dark:text-gray-400">
             {row.code}
           </p>
         </div>
