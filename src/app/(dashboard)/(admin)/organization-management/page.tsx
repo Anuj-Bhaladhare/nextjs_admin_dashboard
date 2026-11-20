@@ -1,22 +1,17 @@
 "use client";
+import { useEffect } from "react";
 import { useRouter } from 'next/navigation';
-
+import { Building2, CalendarDays, Check, ChevronDown, Clock3, Ellipsis, Mail, Pencil, Plus, Search, Settings2, ShieldCheck, UserRound, UsersRound } from "lucide-react";
+import useOrganizationManagement from "./hook";
+// Redux State Management
+import { useAppSelector } from "@/redux/hooks";
 import {
-  Building2,
-  CalendarDays,
-  Check,
-  ChevronDown,
-  Clock3,
-  Ellipsis,
-  Mail,
-  Pencil,
-  Plus,
-  Search,
-  Settings2,
-  ShieldCheck,
-  UserRound,
-  UsersRound,
-} from "lucide-react";
+    selectTotalOrganizations,
+    selectActiveOrganizations,
+    selectSuspendedOrganizations,
+    selectInactiveOrganizations
+} from "@/redux/slices/organization/organizationSelectors";
+
 
 type OrganizationStatus = "Active" | "Inactive" | "Suspended";
 type MemberStatus = "ACTIVE" | "INVITED" | "DISABLED" | "LOCKED";
@@ -219,7 +214,24 @@ function StatGroup({
 
 export default function OrganizationManagementPage() {
 
-    const router = useRouter();
+  const [{ getOrganizations }] = useOrganizationManagement();
+
+  // Enable Next Routing
+  const router = useRouter();
+  // Get Organization State
+  const organization = useAppSelector( (state) => { return state.organization.organization });
+
+
+
+  useEffect(() => {
+    getOrganizations().catch((e) => {
+      console.log(e);
+    });
+
+  }, [getOrganizations]);
+
+  console.log("organization", organization);
+
 
   return (
     <main className="space-y-6 text-gray-800 dark:text-white/90">
@@ -250,7 +262,7 @@ export default function OrganizationManagementPage() {
         {[
           {
             label: "Organizations",
-            value: "4",
+            value: organization.length ?? 0,
             detail: "Accessible to you",
             icon: Building2,
             iconClass:
@@ -258,7 +270,7 @@ export default function OrganizationManagementPage() {
           },
           {
             label: "Active",
-            value: "2",
+            value: organization.filter( (item) => item.status === "ACTIVE").length ?? 0,
             detail: "Available for access",
             icon: ShieldCheck,
             iconClass:
@@ -266,7 +278,7 @@ export default function OrganizationManagementPage() {
           },
           {
             label: "Suspended",
-            value: "1",
+            value: organization.filter( (item) => item.status === "SUSPENDED").length ?? 0,
             detail: "Temporarily restricted",
             icon: Clock3,
             iconClass:
@@ -660,4 +672,5 @@ export default function OrganizationManagementPage() {
       </section>
     </main>
   );
+
 }

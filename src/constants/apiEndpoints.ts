@@ -20,16 +20,16 @@ export const API_ENDPOINTS = {
         
     },
 
-    // ORGANIZATION: {
-    //     CREATE_ORGANIZATION:        { url: "/api/organization",    method: "POST" },
-    //     LIST_ORGANIZATIONS:         { url: "/api/organization",    method: "GET" },
-    //     GET_ORGANIZATION_DETAILS:   { url: "/api/organization",    method: "GET" },
-    //     UPDATE_ORGANIZATION:        { url: "/api/organization",    method: "PATCH" },
-    //     ORGANIZATION_STATUS:        { url: "/api/organization",    method: "PATCH" },
-    //     GET_SETTINGS:               { url: "/api/organization",    method: "GET" },
-    //     UPDATE_SETTINGS:            { url: "/api/organization",    method: "PUT" },
-    //     LIST_ORGANIZATION_MEMBERS:  { url: "/api/organization",    method: "GET" },
-    //     ORGANIZATION_SUMMARY:       { url: "/api/organization",    method: "GET" }
-    // }
-}
+    ORGANIZATION: {
+        CREATE_ORGANIZATION:        { url: "/api/organizations",                             method: "POST" },
+        LIST_ORGANIZATIONS:         { url: "/api/organizations",                             method: "GET" },
+        GET_ORGANIZATION_DETAILS:   { url: "/api/organizations/{organizationId}",            method: "GET" },
+        UPDATE_ORGANIZATION:        { url: "/api/organizations/{organizationId}",            method: "PATCH" },
+        ORGANIZATION_STATUS:        { url: "/api/organizations/{organizationId}/status",     method: "PATCH" },
+        GET_SETTINGS:               { url: "/api/organizations/{organizationId}/settings",   method: "GET" },
+        UPDATE_SETTINGS:            { url: "/api/organizations/{organizationId}/settings",   method: "PUT" },
+        LIST_ORGANIZATION_MEMBERS:  { url: "/api/organizations/{organizationId}/members",    method: "GET" },
+        ORGANIZATION_SUMMARY:       { url: "/api/organizations/{organizationId}/statistics", method: "GET" }
+    }
 
+}
