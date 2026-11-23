@@ -5,7 +5,7 @@ export interface Organization {
     code: string;
     description: string;
     members: number;
-    status: string;
+    status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
     created_at: string;
     updated_at: string;
 }

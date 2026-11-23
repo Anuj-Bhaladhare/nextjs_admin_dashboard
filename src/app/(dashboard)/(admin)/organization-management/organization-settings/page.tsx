@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { ArrowLeft, Braces, Building2, Check, Clock3, Code2, Database, Ellipsis, FileJson2, Info, Plus, Search, Settings2 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import Avatar from 'react-initial-avatar';
-import { Organization, OrganizationResponse } from "./types";
+import { Organization } from "./types";
 
 import useOrganizationSettings from "./hook"
 import { useAppSelector } from "@/redux/hooks";
@@ -65,37 +65,16 @@ const settings = [
 
 export default function OrganizationSettingsPage() {
 
-  const orgSettingState = {
-    id: "",
-    name: "",
-    code: "",
-    description: "",
-    members: 0,
-    status: "",
-    created_at: "",
-    updated_at: ""
-  } 
-
   const [{ getOrganizations }] = useOrganizationSettings();
   const organizations = useAppSelector( (state) => state.organization.organization );
   const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | null>(null);
-  const [ selectedOrganization, setSelectedOrganization ] = useState<Organization>(orgSettingState);
+  const [ selectedOrganization, setSelectedOrganization ] = useState<Organization | null>(null);
 
   const fetchData = async () => {
     try {
       const result = await getOrganizations();
-      if ( result ) {
-        setSelectedOrganization( (prev) => ({
-          ...prev,
-          id: result[0]?.id,
-          name: result[0]?.name,
-          code: result[0]?.code,
-          description: result[0]?.description,
-          members: result[0]?.members,
-          status: result[0]?.status,
-          created_at: result[0]?.created_at,
-          updated_at: result[0]?.updated_at
-        }))
+      if (result[0]) {
+        setSelectedOrganization(result[0]);
       }
     } catch (error) {
       throw error;
