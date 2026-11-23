@@ -1,4 +1,4 @@
-import { CreateOrganizationBody } from "./types";
+import { CreateOrganizationBody, CreateOrganizationResponse } from "./types";
 import relayService from "@/axios/hook";
 import { API_ENDPOINTS } from "@/constants/apiEndpoints";
 
@@ -8,15 +8,29 @@ const useCreateOrganization = () => {
 
         try {
 
-            const response = await relayService({
+            const response = await relayService<CreateOrganizationResponse>({
                 url: API_ENDPOINTS.ORGANIZATION.CREATE_ORGANIZATION.url,
                 method: API_ENDPOINTS.ORGANIZATION.CREATE_ORGANIZATION.method,
                 data: {
-                    name, code, description, status
+                    name: name, 
+                    code: code, 
+                    description: description, 
+                    status: status 
                 }
             })
-yaha se chalu kar bhai
-            console.log("response ====> ", response);
+
+            if ( !response?.data?.status ) {
+                return {
+                    message: response?.data?.message,
+                    status: response?.data?.status
+                }
+            }
+
+            return {
+                id: response?.data?.data.id,
+                message: response?.data?.message,
+                status: response?.data?.status
+            }
 
         } catch (error) {
             throw error;
@@ -24,7 +38,7 @@ yaha se chalu kar bhai
 
     }
 
-    return [{ CreateOrganization }]
+    return [{ CreateOrganization }];
 }
 
 export default useCreateOrganization;

@@ -1,20 +1,21 @@
-import {
-  ArrowLeft,
-  Braces,
-  Building2,
-  Check,
-  ChevronDown,
-  Clock3,
-  Code2,
-  Database,
-  Ellipsis,
-  FileJson2,
-  Info,
-  Plus,
-  Search,
-  Settings2,
-} from "lucide-react";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { ArrowLeft, Braces, Building2, Check, Clock3, Code2, Database, Ellipsis, FileJson2, Info, Plus, Search, Settings2 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import Avatar from 'react-initial-avatar';
+import { Organization, OrganizationResponse } from "./types";
+
+import useOrganizationSettings from "./hook"
+import { useAppSelector } from "@/redux/hooks";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 const settings = [
   {
@@ -22,10 +23,10 @@ const settings = [
     description: "Authentication and session rules",
     updated: "Today, 9:42 AM",
     value: `{
-  "require_mfa": true,
-  "session_timeout_minutes": 30,
-  "allowed_auth_methods": ["password", "sso"]
-}`,
+      "require_mfa": true,
+      "session_timeout_minutes": 30,
+      "allowed_auth_methods": ["password", "sso"]
+    }`,
     selected: true,
   },
   {
@@ -33,10 +34,10 @@ const settings = [
     description: "Visitor registration and approvals",
     updated: "Nov 17, 2026",
     value: `{
-  "enabled": true,
-  "host_approval_required": true,
-  "max_visit_days": 7
-}`,
+      "enabled": true,
+      "host_approval_required": true,
+      "max_visit_days": 7
+    }`,
     selected: false,
   },
   {
@@ -44,10 +45,10 @@ const settings = [
     description: "Security event notification preferences",
     updated: "Nov 12, 2026",
     value: `{
-  "email_enabled": true,
-  "events": ["failed_sign_in", "account_locked"],
-  "recipients": ["security@northstar.example"]
-}`,
+      "email_enabled": true,
+      "events": ["failed_sign_in", "account_locked"],
+      "recipients": ["security@northstar.example"]
+    }`,
     selected: false,
   },
   {
@@ -55,16 +56,76 @@ const settings = [
     description: "Default badge configuration",
     updated: "Nov 08, 2026",
     value: `{
-  "badge_expiry_days": 365,
-  "require_photo": false
-}`,
+      "badge_expiry_days": 365,
+      "require_photo": false
+    }`,
     selected: false,
   },
 ] as const;
 
-const organizationId = "a18f3d9c-7c42-4f10-9b26-2e6a51c0d731";
-
 export default function OrganizationSettingsPage() {
+
+  const orgSettingState = {
+    id: "",
+    name: "",
+    code: "",
+    description: "",
+    members: 0,
+    status: "",
+    created_at: "",
+    updated_at: ""
+  } 
+
+  const [{ getOrganizations }] = useOrganizationSettings();
+  const organizations = useAppSelector( (state) => state.organization.organization );
+  const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | null>(null);
+  const [ selectedOrganization, setSelectedOrganization ] = useState<Organization>(orgSettingState);
+
+  const fetchData = async () => {
+    try {
+      const result = await getOrganizations();
+      if ( result ) {
+        setSelectedOrganization( (prev) => ({
+          ...prev,
+          id: result[0]?.id,
+          name: result[0]?.name,
+          code: result[0]?.code,
+          description: result[0]?.description,
+          members: result[0]?.members,
+          status: result[0]?.status,
+          created_at: result[0]?.created_at,
+          updated_at: result[0]?.updated_at
+        }))
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  useEffect( () => {
+    fetchData()
+  }, [getOrganizations]);
+
+  console.log("selectedOrganization", selectedOrganization);
+
+  const selectOrganizationHandler = (organizationId: string) => {
+
+    const selected_org = organizations.find(
+      (organization) => organization.id === organizationId
+    );
+    console.log("selected_org", selected_org);
+
+    if (!selected_org) {
+      console.error("Organization not found:", organizationId);
+      return;
+    }
+
+    setSelectedOrganization({
+      ...selected_org
+    });
+  
+  }
+
   return (
     <main className="mx-auto max-w-7xl space-y-6 text-gray-800 dark:text-white/90">
       <header className="space-y-4">
@@ -87,9 +148,6 @@ export default function OrganizationSettingsPage() {
                 UI preview · Sample data
               </span>
             </div>
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Organization settings
-            </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
               Configure key/value preferences for an organization. Setting
               values are stored as JSON.
@@ -104,19 +162,33 @@ export default function OrganizationSettingsPage() {
                 className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-gray-400"
                 aria-hidden="true"
               />
-              <select
-                id="organization-select"
-                defaultValue="NORTHSTAR"
-                className="h-10 w-full appearance-none rounded-lg border border-gray-200 bg-white py-2 pr-10 pl-10 text-sm font-medium text-gray-700 outline-none focus:border-brand-500 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+              <Select
+                value={
+                  selectedOrganizationId ??
+                  organizations.find((organization) => organization.code === "NORTHSTAR")?.id ??
+                  organizations[0]?.id ??
+                  null
+                }
+                onValueChange={setSelectedOrganizationId}
               >
-                <option value="NORTHSTAR">Northstar Security</option>
-                <option value="HARBOR-PT">Harbor Point Offices</option>
-                <option value="REDWOOD">Redwood Logistics</option>
-              </select>
-              <ChevronDown
-                className="pointer-events-none absolute top-1/2 right-3.5 size-4 -translate-y-1/2 text-gray-400"
-                aria-hidden="true"
-              />
+                <SelectTrigger
+                  id="organization-select"
+                  className="h-10 w-full appearance-none rounded-lg border border-gray-200 bg-white py-2 pr-10 pl-10 text-sm font-medium text-gray-700 outline-none focus:border-brand-500 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+                >
+                  <SelectValue placeholder="Select organization" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[min(16rem,var(--available-height))] overscroll-contain">
+                  {organizations.map((organization) => (
+                    <SelectItem 
+                      key={organization.id} 
+                      value={organization.id} 
+                      onClick={() => selectOrganizationHandler(organization.id)}
+                    >
+                      {organization.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <button
               type="button"
@@ -135,29 +207,29 @@ export default function OrganizationSettingsPage() {
       >
         <div className="flex min-w-0 items-center gap-3">
           <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-sm font-semibold text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300">
-            NS
+            <Avatar name={selectedOrganization?.name} size={40} className="rounded-md"/>
           </span>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="truncate text-sm font-semibold">
-                Northstar Security
+                {selectedOrganization?.name}
               </h2>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2 py-0.5 text-[11px] font-medium text-green-700 dark:bg-green-500/10 dark:text-green-400">
                 <span className="size-1.5 rounded-full bg-green-500" aria-hidden="true" />
-                Active
+                {selectedOrganization?.status}
               </span>
             </div>
             <p className="mt-1 truncate font-mono text-xs text-gray-500 dark:text-gray-400">
-              NORTHSTAR
+              {selectedOrganization?.code}
             </p>
           </div>
         </div>
         <div className="min-w-0 border-t border-gray-100 pt-3 sm:max-w-sm sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5 dark:border-gray-800">
           <p className="text-[11px] font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-            Organization ID
+            {selectedOrganization?.id}
           </p>
           <p className="mt-1 truncate font-mono text-xs text-gray-600 dark:text-gray-300">
-            {organizationId}
+            {selectedOrganization?.id}
           </p>
         </div>
       </section>
@@ -476,4 +548,5 @@ export default function OrganizationSettingsPage() {
       </section>
     </main>
   );
+
 }

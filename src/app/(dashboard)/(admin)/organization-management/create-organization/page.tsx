@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Building2, Check, CircleHelp, Clock3, Info, KeyRound, ShieldCheck, Sparkles } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { CreateOrganizationBody } from "./types";
 import useCreateOrganization from "./hook";
+
 
 const fieldClassName =
   "mt-2 h-11 w-full rounded-lg border border-gray-200 bg-white px-3.5 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-brand-500 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500";
@@ -32,18 +35,42 @@ const statusOptions = [
 
 export default function CreateOrganizationPage() {
 
-
+    const router = useRouter();
     const [{ CreateOrganization }] = useCreateOrganization()
     const [ createOrganizationState, setCreateOrganizationState ] = useState<CreateOrganizationBody>({
       name: "",
       code: "",
       description: "",
-      status: ""
+      status: "ACTIVE"
     });
 
-    const createOrganizationHandler = () => {
-      CreateOrganization(createOrganizationState);
-    }
+    const createOrganizationHandler = async () => {
+      try {
+        const result = await CreateOrganization(createOrganizationState);
+
+        if (result?.status) {
+          // Reset form
+          setCreateOrganizationState({
+            name: "",
+            code: "",
+            description: "",
+            status: "ACTIVE",
+          });
+
+          // Success notification
+          toast.success(result?.message || "Organization created successfully!");
+
+          // Navigate to organization listing
+          router.push("/organization-management");
+
+        } else {
+          toast.error(result?.message || "Failed to create organization!");
+        }
+      } catch (error) {
+        console.error("Create organization error:", error);
+        toast.error("Something went wrong while creating organization.");
+      }
+    };
 
   return (
     <main className="mx-auto max-w-6xl space-y-6 text-gray-800 dark:text-white/90">
@@ -357,4 +384,5 @@ export default function CreateOrganizationPage() {
       </div>
     </main>
   );
+
 }

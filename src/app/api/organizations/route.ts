@@ -76,6 +76,7 @@ export const POST = async (
         }
 
         const { name, code, description, status } = org_body;
+
         if (!name || !code || !description || !status) {
             return jsonResponse(
                 {

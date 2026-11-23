@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/context/theme-context";
 import ReduxProvider from "@/redux/ReduxProvider";
+import ToasterProvider from "@/components/common/ToasterProvider";
 
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <ReduxProvider>
           <ThemeProvider>
+            <ToasterProvider />
             {children}
           </ThemeProvider>
         </ReduxProvider>
