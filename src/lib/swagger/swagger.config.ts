@@ -29,15 +29,42 @@ const options: swaggerJsdoc.Options = {
         name: "Authentication",
         description: "Login, logout, sessions and account security",
       },
-      { name: "Users", description: "User profile and user management" },
-      { name: "Organizations", description: "Organization management" },
-      { name: "RBAC", description: "Roles, permissions and delegations" },
-      { name: "Members", description: "Member management" },
-      { name: "Health", description: "API health checks" },
-      { name: "Dashboard", description: "Dashboard and statistics" },
-      { name: "Invitations", description: "Invitation management" },
-      { name: "Reports", description: "Reports and exports" },
-      { name: "Settings", description: "Application configuration" },
+      { 
+        name: "Users", 
+        description: "User profile and user management" 
+      },
+      { 
+        name: "Organizations", 
+        description: "Organization management" 
+      },
+      { 
+        name: "Members", 
+        description: "Member management" 
+      },
+      { 
+        name: "RBAC", 
+        description: "Roles, permissions and delegations" 
+      },
+      { 
+        name: "Health", 
+        description: "API health checks" 
+      },
+      { 
+        name: "Dashboard", 
+        description: "Dashboard and statistics" 
+      },
+      { 
+        name: "Invitations", 
+        description: "Invitation management" 
+      },
+      { 
+        name: "Reports", 
+        description: "Reports and exports" 
+      },
+      { 
+        name: "Settings", 
+        description: "Application configuration" 
+      },
       {
         name: "Gate Control",
         description: "Gate control and device APIs",
