@@ -3,6 +3,129 @@ import { jsonResponse } from "@/app/api/jsonResponse";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getPostgresPool } from "@/lib/db/client";
 
+/**
+ * @swagger
+ * /api/organizations/{organizationId}/status:
+ *   patch:
+ *     tags:
+ *       - Organizations
+ *     summary: Update organization status
+ *     description: Updates the status of an organization. The authenticated user must have active membership in it.
+ *     operationId: updateOrganizationStatus
+ *     security:
+ *       - CookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: organizationId
+ *         required: true
+ *         description: UUID of the organization.
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [ACTIVE, INACTIVE, SUSPENDED]
+ *                 description: New organization status.
+ *                 example: INACTIVE
+ *     responses:
+ *       '200':
+ *         description: Organization status updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Organization status updated successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     code:
+ *                       type: string
+ *                     description:
+ *                       type: [string, 'null']
+ *                     status:
+ *                       type: string
+ *                       enum: [ACTIVE, INACTIVE, SUSPENDED]
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
+ *       '400':
+ *         description: Organization ID is missing, status is invalid, or the update could not be completed.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     - Organization status must be one of ACTIVE, INACTIVE, or SUSPENDED.
+ *                     - Organization status could not be updated.
+ *       '401':
+ *         description: Authentication is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized.
+ *       '403':
+ *         description: The authenticated user does not have active access to this organization.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: 'Forbidden: user does not have access to this organization.'
+ *       '500':
+ *         description: Invalid JSON body or an unexpected server error prevented the status from being updated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 const pool = getPostgresPool();
 
 const ensureOrganizationAccess = async (userId: string, organizationId: string) => {

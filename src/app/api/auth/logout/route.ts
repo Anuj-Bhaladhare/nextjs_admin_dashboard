@@ -5,6 +5,56 @@ import { hashAccessToken } from "@/lib/auth/session";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { getPostgresPool } from "@/lib/db/client";
 
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Log out the current session
+ *     description: >
+ *       Revokes the session associated with the access_token cookie when the
+ *       cookie contains a valid token. A missing or invalid token still
+ *       returns success. The access_token cookie is cleared in every response.
+ *     operationId: logoutUser
+ *     responses:
+ *       '200':
+ *         description: Logout completed and the access_token cookie was cleared.
+ *         headers:
+ *           Set-Cookie:
+ *             description: Clears the access_token cookie.
+ *             schema:
+ *               type: string
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Logout successful.
+ *       '500':
+ *         description: The session could not be revoked. The access_token cookie is still cleared.
+ *         headers:
+ *           Set-Cookie:
+ *             description: Clears the access_token cookie.
+ *             schema:
+ *               type: string
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unable to revoke the session.
+ */
 export async function POST(request: NextRequest) {
     let response: NextResponse;
 

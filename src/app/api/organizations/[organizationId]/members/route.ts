@@ -5,6 +5,129 @@ import { getPostgresPool } from "@/lib/db/client";
 
 const pool = getPostgresPool();
 
+/**
+ * @swagger
+ * /api/organizations/{organizationId}/members:
+ *   get:
+ *     tags:
+ *       - Organizations
+ *     summary: List organization members
+ *     description: Returns active members of the organization. The authenticated user must have active membership in it.
+ *     operationId: listOrganizationMembers
+ *     security:
+ *       - CookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: organizationId
+ *         required: true
+ *         description: UUID of the organization.
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       '200':
+ *         description: Organization members fetched successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Organization members fetched successfully
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       first_name:
+ *                         type: string
+ *                       last_name:
+ *                         type: [string, 'null']
+ *                       username:
+ *                         type: [string, 'null']
+ *                       email:
+ *                         type: string
+ *                         format: email
+ *                       mobile:
+ *                         type: [string, 'null']
+ *                       status:
+ *                         type: string
+ *                         enum: [INVITED, ACTIVE, SUSPENDED, DISABLED, LOCKED]
+ *                       email_verified_at:
+ *                         type: [string, 'null']
+ *                         format: date-time
+ *                       mobile_verified_at:
+ *                         type: [string, 'null']
+ *                         format: date-time
+ *                       last_login_at:
+ *                         type: [string, 'null']
+ *                         format: date-time
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *                       updated_at:
+ *                         type: string
+ *                         format: date-time
+ *       '400':
+ *         description: Organization ID is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Organization id is required.
+ *       '401':
+ *         description: Authentication is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized.
+ *       '403':
+ *         description: The authenticated user does not have active access to this organization.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: 'Forbidden: user does not have access to this organization.'
+ *       '500':
+ *         description: An unexpected server error prevented members from being retrieved.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 export interface OrganizationMember {
     id: string;
     first_name: string;

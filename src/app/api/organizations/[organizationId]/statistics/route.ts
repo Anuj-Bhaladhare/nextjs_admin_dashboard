@@ -3,6 +3,119 @@ import { jsonResponse } from "@/app/api/jsonResponse";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getPostgresPool } from "@/lib/db/client";
 
+/**
+ * @swagger
+ * /api/organizations/{organizationId}/statistics:
+ *   get:
+ *     tags:
+ *       - Organizations
+ *     summary: Get organization membership statistics
+ *     description: Returns member and user status counts for the organization. The authenticated user must have active membership in it.
+ *     operationId: getOrganizationStatistics
+ *     security:
+ *       - CookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: organizationId
+ *         required: true
+ *         description: UUID of the organization.
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       '200':
+ *         description: Organization statistics fetched successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Organization statistics fetched successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     total_members:
+ *                       type: integer
+ *                       example: 24
+ *                     active_members:
+ *                       type: integer
+ *                       example: 18
+ *                     inactive_members:
+ *                       type: integer
+ *                       example: 3
+ *                     suspended_members:
+ *                       type: integer
+ *                       example: 3
+ *                     active_users:
+ *                       type: integer
+ *                       example: 17
+ *                     invited_users:
+ *                       type: integer
+ *                       example: 4
+ *                     disabled_users:
+ *                       type: integer
+ *                       example: 2
+ *                     locked_users:
+ *                       type: integer
+ *                       example: 1
+ *       '400':
+ *         description: Organization ID is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Organization id is required.
+ *       '401':
+ *         description: Authentication is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized.
+ *       '403':
+ *         description: The authenticated user does not have active access to this organization.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: 'Forbidden: user does not have access to this organization.'
+ *       '500':
+ *         description: An unexpected server error prevented statistics from being retrieved.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 const pool = getPostgresPool();
 
 const ensureOrganizationAccess = async (userId: string, organizationId: string) => {

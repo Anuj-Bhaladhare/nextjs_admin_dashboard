@@ -1,127 +1,207 @@
 
-import bcrypt from "bcryptjs";
+import { EmailDeliveryError } from "@/lib/email/email.types";
+import { getEmailConfig } from "@/lib/email/email.config";
+import { sendEmail } from "@/lib/email/email.service";
+import { forgotPasswordTemplate } from "@/lib/email/templates/auth/forgot-password.template";
+import {
+    createPasswordResetToken,
+    PASSWORD_RESET_TOKEN_TTL_MINUTES,
+} from "@/lib/auth/password-reset-token";
+import { getPostgresPool } from "@/lib/db/client";
+import { jsonResponse } from "@/app/api/jsonResponse";
 import { NextResponse } from "next/server";
 
-import { getPostgresPool } from "@/lib/db/client";
+const genericResponse = {
+    message:
+        "If an active account exists for this email, password reset instructions will be sent.",
+};
 
-// export const runtime = "nodejs";
-
-interface ForgotPasswordBody {
-    email: string;
-    password: string;
-    confirmPassword: string;
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function jsonResponse(body: object, status = 200): NextResponse {
-    return NextResponse.json(body, {
-        status,
-        headers: {  
-            "Cache-Control": "no-store",
-        },
-    });
-}
-
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Request a password reset link
+ *     description: >
+ *       Sends a single-use reset link to the email address of an active account.
+ *       The link expires after 30 minutes. The response is the same whether or
+ *       not an active account exists, to prevent account enumeration.
+ *     operationId: requestPasswordReset
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 maxLength: 255
+ *                 description: Email address associated with the account.
+ *                 example: user@example.com
+ *     responses:
+ *       '202':
+ *         description: Request accepted. The response does not reveal whether the account exists.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: If an active account exists for this email, password reset instructions will be sent.
+ *       '400':
+ *         description: Invalid JSON body or email address.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Please provide a valid email address.
+ *       '500':
+ *         description: The reset request could not be processed.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Unable to process the password reset request.
+ */
 export const POST = async (request: Request): Promise<NextResponse> => {
+    let body: unknown;
+
     try {
-        // Parse request body
-        let body: ForgotPasswordBody;
+        body = await request.json();
+    } catch {
+        return jsonResponse({ error: "Request body must be valid JSON." }, 400);
+    }
+
+    if (!isRecord(body) || typeof body.email !== "string") {
+        return jsonResponse({ error: "A valid email address is required." }, 400);
+    }
+
+    const email = body.email.trim().toLowerCase();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email || email.length > 255 || !emailPattern.test(email)) {
+        return jsonResponse({ error: "Please provide a valid email address." }, 400);
+    }
+
+    try {
+        const pool = getPostgresPool();
+        const userResult = await pool.query<{
+            id: string;
+            email: string;
+            first_name: string;
+        }>(
+            `SELECT id, email, first_name
+             FROM core.users
+             WHERE LOWER(email) = $1
+               AND status = 'ACTIVE'
+             LIMIT 1`,
+            [email],
+        );
+        const user = userResult.rows[0];
+
+        if (!user) {
+            return jsonResponse(genericResponse, 202);
+        }
+
+        const { token, tokenHash } = createPasswordResetToken();
+        const client = await pool.connect();
 
         try {
-            body = await request.json();
-        } catch {
-            return jsonResponse(
-                { error: "Request body must be valid JSON." },
-                400,
+            await client.query("BEGIN");
+            await client.query(
+                `UPDATE auth.password_reset_tokens
+                 SET used_at = NOW()
+                 WHERE user_id = $1 AND used_at IS NULL`,
+                [user.id],
             );
+            await client.query(
+                `INSERT INTO auth.password_reset_tokens
+                    (user_id, token_hash, expires_at)
+                 VALUES ($1, $2, NOW() + ($3::int * INTERVAL '1 minute'))`,
+                [user.id, tokenHash, PASSWORD_RESET_TOKEN_TTL_MINUTES],
+            );
+            await client.query("COMMIT");
+        } catch (error) {
+            await client.query("ROLLBACK");
+            throw error;
+        } finally {
+            client.release();
         }
 
-        const { email, password, confirmPassword } = body;
+        try {
+            const emailConfig = getEmailConfig();
+            const resetUrl = new URL("/reset-password", emailConfig.appUrl);
+            resetUrl.searchParams.set("token", token);
+            const template = forgotPasswordTemplate({
+                recipientName: user.first_name,
+                resetUrl: resetUrl.toString(),
+                expiresInMinutes: PASSWORD_RESET_TOKEN_TTL_MINUTES,
+            });
+            const delivery = await sendEmail({
+                to: user.email,
+                subject: template.subject,
+                html: template.html,
+                text: template.text,
+            });
 
-        // Validate required fields
-        if (
-            typeof email !== "string" ||
-            typeof password !== "string" ||
-            typeof confirmPassword !== "string"
-        ) {
-            return jsonResponse(
-                {
-                    error: "Email, password and confirm password are required.",
-                },
-                400,
+            if (
+                !delivery.accepted.some(
+                    (recipient) =>
+                        recipient.toLowerCase() === user.email.toLowerCase(),
+                )
+            ) {
+                throw new EmailDeliveryError(
+                    "Reset email was not accepted by the provider.",
+                    "RECIPIENT_REJECTED",
+                );
+            }
+        } catch (error) {
+            console.error(
+                "[Forgot Password] Reset email delivery failed",
+                error instanceof EmailDeliveryError ? error.code : "UNKNOWN",
             );
+
+            try {
+                await pool.query(
+                    `UPDATE auth.password_reset_tokens
+                     SET used_at = NOW()
+                     WHERE token_hash = $1 AND used_at IS NULL`,
+                    [tokenHash],
+                );
+            } catch (cleanupError) {
+                console.error(
+                    "[Forgot Password] Failed to invalidate undelivered token",
+                    cleanupError,
+                );
+            }
         }
 
-        // Normalize email
-        const normalizedEmail = email.trim().toLowerCase();
-
-        // Validate email
-        const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (
-            !normalizedEmail ||
-            normalizedEmail.length > 255 ||
-            !EMAIL_PATTERN.test(normalizedEmail)
-        ) {
-            return jsonResponse(
-                { error: "Please provide a valid email address." },
-                400,
-            );
-        }
-
-        // Validate password
-        if (password.length < 8) {
-            return jsonResponse(
-                { error: "Password must be at least 8 characters long." },
-                400,
-            );
-        }
-
-        // Validate password confirmation
-        if (password !== confirmPassword) {
-            return jsonResponse(
-                { error: "Password and confirm password do not match." },
-                400,
-            );
-        }
-
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 12);
-
-        // Connect to PostgreSQL
-        const pool = getPostgresPool();
-
-        // Update user password using email
-        const result = await pool.query(
-            `
-                UPDATE core.users
-                SET password_hash = $1,
-                    updated_at = NOW()
-                WHERE LOWER(email) = $2
-                RETURNING id
-            `,
-            [hashedPassword, normalizedEmail],
-        );
-
-        // Check user existence
-        if (result.rowCount === 0) {
-            return jsonResponse(
-                { error: "No account found with this email address." },
-                404,
-            );
-        }
-
-        return jsonResponse({
-            success: true,
-            message: "Password reset successfully.",
-        });
+        return jsonResponse(genericResponse, 202);
     } catch (error) {
-        console.error("[Forgot Password] Error:", error);
+        console.error("[Forgot Password] Request failed", error);
 
         return jsonResponse(
             {
-                error: "Unable to reset password. Please try again.",
+                error: "Unable to process the password reset request.",
             },
             500,
         );
     }
-}
+};
