@@ -1,5 +1,4 @@
 
-
 export interface OrganizationBody{
     name: string,
     code: string,

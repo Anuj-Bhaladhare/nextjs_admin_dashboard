@@ -13,6 +13,117 @@ import { jsonResponse } from "@/app/api/jsonResponse";
  
 const [{ getUserByEmail, getUserRoleByUserID, getUserRoleByUserRoleID, getOrganizationByOrganizationID }] = LoginRepository();
 
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: User login
+ *     description: >
+ *       Authenticates a user using their email and password.
+ *       Email is trimmed and converted to lowercase.
+ *       On successful authentication, a session is created,
+ *       an access token is generated, and the token is stored
+ *       in an HttpOnly cookie.
+ *     operationId: loginUser
+ *
+ *     requestBody:
+ *       required: true
+ *       description: User credentials required for login.
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 maxLength: 255
+ *                 description: User email address.
+ *                 example: admin@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *                 description: User password (minimum 8 characters).
+ *                 example: SecurePass123!
+ *
+ *     responses:
+ *       '200':
+ *         description: User login successful. Access token is set in the cookie.
+ *         headers:
+ *           Set-Cookie:
+ *             description: HttpOnly access token cookie.
+ *             schema:
+ *               type: string
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 access_token:
+ *                   type: text
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30
+ *                 message:
+ *                   type: string
+ *                   example: User Login Success..!
+ *
+ *       '400':
+ *         description: Invalid request body, email, password, or credentials.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   examples:
+ *                     - Request body must be valid JSON.
+ *                     - Please provide a valid email address.
+ *                     - Password must be at least 8 characters long.
+ *                     - Please Provide Correct Password
+ *
+ *       '403':
+ *         description: Account is not active.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 error:
+ *                   type: string
+ *                   example: This account is not active.
+ *
+ *       '500':
+ *         description: Internal server error or access token generation failure.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     - Internal Server Error
+ *                     - Unable to generate access token.
+ */
 export const POST = async (request: Request): Promise<NextResponse> => {
     try {
         
@@ -122,7 +233,11 @@ export const POST = async (request: Request): Promise<NextResponse> => {
             );
 
             const response = jsonResponse(
-                { status: true, message: "User Login Success..!" },
+                { 
+                    status: true, 
+                    access_token: jwt_token,
+                    message: "User Login Success..!" 
+                },
                 200,
             );
             response.cookies.set(ACCESS_TOKEN_COOKIE, jwt_token, {

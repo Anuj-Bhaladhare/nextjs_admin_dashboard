@@ -108,7 +108,7 @@ export default function SignInFormFields() {
           </FieldLabel>
         </Field>
         <Link
-          href="/reset-password"
+          href="/forgot-password"
           className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
         >
           Forgot password?

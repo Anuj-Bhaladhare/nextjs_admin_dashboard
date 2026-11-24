@@ -24,7 +24,131 @@ const ensureOrganizationAccess = async (userId: string, organizationId: string) 
     return access.rowCount !== null && access.rowCount > 0;
 };
 
-// Get organization details
+/**
+ * @swagger
+ * /api/organizations/{organizationId}:
+ *   parameters:
+ *     - in: path
+ *       name: organizationId
+ *       required: true
+ *       description: UUID of the organization.
+ *       schema:
+ *         type: string
+ *         format: uuid
+ *   get:
+ *     tags:
+ *       - Organizations
+ *     summary: Get organization details
+ *     description: >
+ *       Returns organization details for the specified organization. The
+ *       authenticated user must have active membership in the organization.
+ *     operationId: getOrganizationDetails
+ *     security:
+ *       - CookieAuth: []
+ *     responses:
+ *       '200':
+ *         description: Organization details retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Organization Details Get Successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     code:
+ *                       type: string
+ *                     description:
+ *                       type: [string, 'null']
+ *                     status:
+ *                       type: string
+ *                       enum: [ACTIVE, INACTIVE, SUSPENDED]
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
+ *       '400':
+ *         description: Organization ID is missing.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Provide Organization Id In Params
+ *       '401':
+ *         description: Authentication is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized.
+ *       '403':
+ *         description: The authenticated user does not have active access to this organization.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: 'Forbidden: user does not have access to this organization.'
+ *       '404':
+ *         description: Organization was not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Organization was not found.
+ *                 organizationId:
+ *                   type: string
+ *                   format: uuid
+ *       '500':
+ *         description: An unexpected server error prevented the organization from being retrieved.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 export const GET = async (
     request: NextRequest,
     { params }: { params: Promise<ParamsData> }
@@ -97,7 +221,157 @@ export const GET = async (
     }
 };
 
-// Update organization
+
+/**
+ * @swagger
+ * /api/organizations/{organizationId}:
+ *   parameters:
+ *     - in: path
+ *       name: organizationId
+ *       required: true
+ *       description: UUID of the organization.
+ *       schema:
+ *         type: string
+ *         format: uuid
+ *   patch:
+ *     tags:
+ *       - Organizations
+ *     summary: Update organization details
+ *     description: >
+ *       Updates one or more organization fields. The authenticated user must
+ *       have active membership in the organization. Omitted or null fields
+ *       are left unchanged.
+ *     operationId: updateOrganizationDetails
+ *     security:
+ *       - CookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             minProperties: 1
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 maxLength: 200
+ *                 description: Updated organization name.
+ *                 example: Acme Security
+ *               code:
+ *                 type: string
+ *                 maxLength: 80
+ *                 description: Updated unique organization code.
+ *                 example: ACME-001
+ *               description:
+ *                 type: [string, 'null']
+ *                 description: Updated description; null leaves the existing value unchanged.
+ *                 example: Updated regional operations.
+ *               status:
+ *                 type: string
+ *                 enum: [ACTIVE, INACTIVE, SUSPENDED]
+ *                 description: Updated organization status.
+ *                 example: ACTIVE
+ *     responses:
+ *       '200':
+ *         description: Organization updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Organization updated successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     name:
+ *                       type: string
+ *                     code:
+ *                       type: string
+ *                     description:
+ *                       type: [string, 'null']
+ *                     status:
+ *                       type: string
+ *                       enum: [ACTIVE, INACTIVE, SUSPENDED]
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
+ *       '400':
+ *         description: Organization ID is missing or no update fields were provided.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: No organization fields were provided for update.
+ *       '401':
+ *         description: Authentication is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized.
+ *       '403':
+ *         description: The authenticated user does not have active access to this organization.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: 'Forbidden: user does not have access to this organization.'
+ *       '404':
+ *         description: Organization could not be updated or was not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Organization could not be updated.
+ *       '500':
+ *         description: Invalid JSON body or an unexpected server error prevented the update.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 export const PATCH = async (
     request: NextRequest,
     { params }: { params: Promise<ParamsData> }

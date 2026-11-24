@@ -1,284 +1,317 @@
 "use client";
-import { useEffect } from "react";
-import { useRouter } from 'next/navigation';
-import { Building2, CalendarDays, Check, ChevronDown, Clock3, Ellipsis, Mail, Pencil, Plus, Search, Settings2, ShieldCheck, UserRound, UsersRound } from "lucide-react";
+
+import { useMemo, useState, useEffect } from "react";
+import { DataGrid, type GridColDef } from "@mui/x-data-grid";
+import { Box } from "@mui/material";
+import { ArrowDownUp, Building2, ChevronDown, Clock3, Ellipsis, Plus, Search, Settings2, UsersRound } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import useOrganizationManagement from "./hook";
-// Redux State Management
 import { useAppSelector } from "@/redux/hooks";
-import {
-    selectTotalOrganizations,
-    selectActiveOrganizations,
-    selectSuspendedOrganizations,
-    selectInactiveOrganizations
-} from "@/redux/slices/organization/organizationSelectors";
 
 
-type OrganizationStatus = "Active" | "Inactive" | "Suspended";
-type MemberStatus = "ACTIVE" | "INVITED" | "DISABLED" | "LOCKED";
+type OrganizationStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
 
-const organizations = [
-  {
-    name: "Northstar Security",
-    code: "NORTHSTAR",
-    description: "Corporate security and access operations.",
-    initials: "NS",
-    avatarClass:
-      "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300",
-    status: "Active",
-    members: 284,
-    updated: "Today, 9:42 AM",
-  },
-  {
-    name: "Harbor Point Offices",
-    code: "HARBOR-PT",
-    description: "Workplace access for Harbor Point locations.",
-    initials: "HP",
-    avatarClass:
-      "bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300",
-    status: "Active",
-    members: 96,
-    updated: "Yesterday",
-  },
-  {
-    name: "Redwood Logistics",
-    code: "REDWOOD",
-    description: "Facility access and visitor management.",
-    initials: "RL",
-    avatarClass:
-      "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
-    status: "Suspended",
-    members: 38,
-    updated: "Nov 14, 2026",
-  },
-  {
-    name: "Aster Labs",
-    code: "ASTER-LABS",
-    description: "Research campus access administration.",
-    initials: "AL",
-    avatarClass:
-      "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
-    status: "Inactive",
-    members: 10,
-    updated: "Nov 10, 2026",
-  },
-] as const;
+interface OrganizationRow {
+  id: string;
+  name: string;
+  code: string;
+  description: string;
+  status: OrganizationStatus;
+  members: number;
+  updatedAt: string;
+}
 
-const membershipStatistics = [
-  { label: "Total members", value: "284" },
-  { label: "Active members", value: "248" },
-  { label: "Inactive members", value: "18" },
-  { label: "Suspended members", value: "18" },
-] as const;
-
-const userStatistics = [
-  { label: "Active users", value: "232" },
-  { label: "Invited users", value: "30" },
-  { label: "Disabled users", value: "14" },
-  { label: "Locked users", value: "8" },
-] as const;
-
-const settings = [
-  {
-    key: "access_policy",
-    value: "MFA required · 30-minute session",
-    description: "Sign-in and session preferences",
-  },
-  {
-    key: "visitor_access",
-    value: "Enabled · Host approval required",
-    description: "Visitor access preferences",
-  },
-  {
-    key: "security_notifications",
-    value: "Enabled · Email alerts",
-    description: "Organization notification preferences",
-  },
-] as const;
-
-const members = [
-  {
-    firstName: "Maya",
-    lastName: "Chen",
-    username: "maya.chen",
-    email: "maya.chen@northstar.example",
-    mobile: "+1 (415) 555-0132",
-    status: "ACTIVE",
-    emailVerified: true,
-    lastLogin: "Today, 9:18 AM",
-  },
-  {
-    firstName: "Ethan",
-    lastName: "Brooks",
-    username: "ethan.brooks",
-    email: "ethan.brooks@northstar.example",
-    mobile: "+1 (415) 555-0184",
-    status: "INVITED",
-    emailVerified: false,
-    lastLogin: "Not signed in",
-  },
-  {
-    firstName: "Olivia",
-    lastName: "Patel",
-    username: "olivia.patel",
-    email: "olivia.patel@northstar.example",
-    mobile: "+1 (415) 555-0198",
-    status: "LOCKED",
-    emailVerified: true,
-    lastLogin: "Nov 16, 2026",
-  },
-] as const;
-
-const organizationStatusStyles: Record<OrganizationStatus, string> = {
-  Active: "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400",
-  Inactive: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300",
-  Suspended:
+const statusStyles: Record<OrganizationStatus, string> = {
+  ACTIVE: "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400",
+  INACTIVE: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300",
+  SUSPENDED:
     "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400",
 };
 
-const memberStatusStyles: Record<MemberStatus, string> = {
-  ACTIVE: "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400",
-  INVITED: "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400",
-  DISABLED: "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300",
-  LOCKED: "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400",
+const columns: GridColDef<OrganizationRow>[] = [
+  {
+    field: "name",
+    headerName: "Organization",
+    minWidth: 250,
+    flex: 1.25,
+    sortable: true,
+    renderCell: ({ row }) => (
+      <div className="flex h-full min-w-0 items-center gap-3">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-sm font-semibold text-brand-700 dark:bg-brand-500/12 dark:text-brand-300">
+          {row.name
+            .split(" ")
+            .slice(0, 2)
+            .map((word) => word[0])
+            .join("")}
+        </span>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-gray-800 dark:text-white/90">
+            {row.name}
+          </p>
+          <p className="mt-0.5 truncate font-mono text-[11px] leading-4 text-gray-500 dark:text-gray-400">
+            {row.code}
+          </p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    field: "description",
+    headerName: "Description",
+    minWidth: 220,
+    flex: 1,
+    sortable: false,
+    renderCell: ({ value }) => (
+      <span className="truncate text-sm text-gray-500 dark:text-gray-400">
+        {value}
+      </span>
+    ),
+  },
+  {
+    field: "members",
+    headerName: "Members",
+    width: 120,
+    align: "left",
+    headerAlign: "left",
+    renderCell: ({ value }) => (
+      <span className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+        <UsersRound
+          className="size-4 text-gray-400"
+          aria-hidden="true"
+        />
+        {value}
+      </span>
+    ),
+  },
+  {
+    field: "status",
+    headerName: "Status",
+    width: 140,
+    renderCell: ({ row }) => {
+      const { status } = row;
+
+      return (
+        <span
+          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ${statusStyles[status]}`}
+        >
+          <span
+            className={`size-1.5 rounded-full ${
+              status === "ACTIVE"
+                ? "bg-green-500"
+                : status === "SUSPENDED"
+                  ? "bg-amber-500"
+                  : "bg-gray-400"
+            }`}
+            aria-hidden="true"
+          />
+          {status.toLowerCase()}
+        </span>
+      );
+    },
+  },
+  {
+    field: "updatedAt",
+    headerName: "Last updated",
+    minWidth: 155,
+    flex: 0.7,
+    renderCell: ({ value }) => (
+      <span className="inline-flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+        <Clock3 className="size-3.5 shrink-0 text-gray-400" aria-hidden="true" />
+        {value}
+      </span>
+    ),
+  },
+  {
+    field: "actions",
+    headerName: "",
+    width: 64,
+    sortable: false,
+    filterable: false,
+    disableColumnMenu: true,
+    align: "center",
+    headerAlign: "center",
+    renderCell: ({ row }) => (
+      <button
+        type="button"
+        aria-label={`More actions for ${row.name}`}
+        className="inline-flex size-8 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/10"
+      >
+        <Ellipsis className="size-5" aria-hidden="true" />
+      </button>
+    ),
+  },
+];
+
+const dataGridSx = {
+  border: 0,
+  color: "inherit",
+  fontFamily: "inherit",
+  "& .MuiDataGrid-columnHeaders": {
+    minHeight: "48px !important",
+    maxHeight: "48px !important",
+    backgroundColor: "var(--color-gray-50)",
+    borderBottom: "1px solid var(--color-gray-100)",
+  },
+  "& .MuiDataGrid-columnHeaderTitle": {
+    fontSize: "11px",
+    fontWeight: 600,
+    letterSpacing: "0.04em",
+    textTransform: "uppercase",
+    color: "#667085",
+  },
+  "& .MuiDataGrid-columnSeparator": {
+    color: "var(--color-gray-200)",
+  },
+  "& .MuiDataGrid-row": {
+    minHeight: "76px !important",
+    maxHeight: "76px !important",
+    borderBottom: "1px solid var(--color-gray-100)",
+  },
+  "& .MuiDataGrid-cell": {
+    display: "flex",
+    alignItems: "center",
+    border: 0,
+    outline: "none",
+    whiteSpace: "normal",
+  },
+  "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within, & .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-columnHeader:focus-within":
+    {
+      outline: "none",
+    },
+  "& .MuiDataGrid-row:hover": {
+    backgroundColor: "var(--color-gray-50)",
+  },
+  "& .MuiDataGrid-footerContainer": {
+    minHeight: "56px",
+    borderTop: "1px solid var(--color-gray-100)",
+  },
+  "& .MuiTablePagination-root, & .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows":
+    {
+      fontSize: "12px",
+      color: "#667085",
+    },
+  "& .MuiDataGrid-virtualScroller": {
+    minHeight: "200px",
+  },
+  ".dark & .MuiDataGrid-columnHeaders": {
+    backgroundColor: "rgba(255,255,255,0.03)",
+    borderBottomColor: "rgba(255,255,255,0.08)",
+  },
+  ".dark & .MuiDataGrid-columnHeaderTitle, .dark & .MuiTablePagination-root, .dark & .MuiTablePagination-selectLabel, .dark & .MuiTablePagination-displayedRows":
+    {
+      color: "rgba(255,255,255,0.6)",
+    },
+  ".dark & .MuiDataGrid-row": {
+    borderBottomColor: "rgba(255,255,255,0.08)",
+  },
+  ".dark & .MuiDataGrid-row:hover": {
+    backgroundColor: "rgba(255,255,255,0.03)",
+  },
+  ".dark & .MuiDataGrid-footerContainer": {
+    borderTopColor: "rgba(255,255,255,0.08)",
+  },
 };
 
-function OrganizationStatusBadge({
-  status,
-}: {
-  status: OrganizationStatus;
-}) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${organizationStatusStyles[status]}`}
-    >
-      <span
-        className={`size-1.5 rounded-full ${
-          status === "Active"
-            ? "bg-green-500"
-            : status === "Suspended"
-              ? "bg-amber-500"
-              : "bg-gray-400"
-        }`}
-        aria-hidden="true"
-      />
-      {status}
-    </span>
-  );
-}
+export default function OrganizationDatatablePage() {
 
-function MemberStatusBadge({ status }: { status: MemberStatus }) {
-  return (
-    <span
-      className={`rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide ${memberStatusStyles[status]}`}
-    >
-      {status}
-    </span>
-  );
-}
-
-function StatGroup({
-  title,
-  description,
-  data,
-}: {
-  title: string;
-  description: string;
-  data: readonly { label: string; value: string }[];
-}) {
-  return (
-    <section>
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold">{title}</h3>
-        <span className="text-xs text-gray-400 dark:text-gray-500">
-          {description}
-        </span>
-      </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {data.map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-xl border border-gray-100 bg-gray-50/70 px-4 py-3 dark:border-gray-800 dark:bg-white/3"
-          >
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {stat.label}
-            </p>
-            <p className="mt-1.5 text-xl font-semibold tracking-tight">
-              {stat.value}
-            </p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-export default function OrganizationManagementPage() {
-
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("ALL");
   const [{ getOrganizations }] = useOrganizationManagement();
+  const organizationRows = useAppSelector( (state) => state.organization.organization );
 
-  // Enable Next Routing
-  const router = useRouter();
-  // Get Organization State
-  const organization = useAppSelector( (state) => { return state.organization.organization });
+  const filteredRows = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
 
+    return organizationRows
+      .filter((organization) => {
+        const matchesSearch =
+          normalizedSearch.length === 0 ||
+          organization.name.toLowerCase().includes(normalizedSearch) ||
+          organization.code.toLowerCase().includes(normalizedSearch) ||
+          organization.description.toLowerCase().includes(normalizedSearch);
+        const matchesStatus =
+          status === "ALL" || organization.status === status;
 
+        return matchesSearch && matchesStatus;
+      })
+      .map((organization) => ({
+        ...organization,
+        updatedAt: organization.updated_at,
+      }));
+  }, [organizationRows, search, status]);
 
-  useEffect(() => {
-    getOrganizations().catch((e) => {
-      console.log(e);
-    });
-
+  useEffect( () => {
+    getOrganizations()
   }, [getOrganizations]);
 
-  console.log("organization", organization);
+  console.log("=========================", organizationRows);
+
+  const totalMembers = organizationRows.reduce(
+    (total, organization) => total + organization.members,
+    0,
+  );
+
+  const activeCount = organizationRows.filter(
+    (organization) => organization.status === "ACTIVE",
+  ).length;
+
+  const suspendedCount = organizationRows.filter(
+    (organization) => organization.status === "SUSPENDED",
+  ).length;
+
 
 
   return (
     <main className="space-y-6 text-gray-800 dark:text-white/90">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          <div className="mb-2 flex items-center gap-2 text-sm font-medium text-brand-600 dark:text-brand-400">
+            <Building2 className="size-4" aria-hidden="true" />
             Organization management
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-            Manage organization profiles, status, settings, and member access
-            from one place.
-          </p>
+          </div>
         </div>
-        <button
-          type="button"
-          onClick={ () => router.push('/organization-management/create-organization') }
-          className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-700 sm:self-auto"
-        >
-          <Plus className="size-4" aria-hidden="true" />
-          Create organization
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/organization-management/organization-settings"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-white/5"
+          >
+            <Settings2 className="size-4" aria-hidden="true" />
+            Settings
+          </Link>
+          <Link
+            href="/organization-management/create-organization"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-700"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            Create organization
+          </Link>
+        </div>
       </header>
 
       <section
-        aria-label="Organization totals"
+        aria-label="Organization statistics"
         className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
       >
         {[
           {
-            label: "Organizations",
-            value: organization.length ?? 0,
-            detail: "Accessible to you",
+            label: "Total organizations",
+            value: organizationRows.length.toString(),
+            detail: "Across your workspace",
             icon: Building2,
             iconClass:
               "bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400",
           },
           {
-            label: "Active",
-            value: organization.filter( (item) => item.status === "ACTIVE").length ?? 0,
+            label: "Active organizations",
+            value: activeCount.toString(),
             detail: "Available for access",
-            icon: ShieldCheck,
+            icon: Building2,
             iconClass:
               "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
           },
           {
-            label: "Suspended",
-            value: organization.filter( (item) => item.status === "SUSPENDED").length ?? 0,
+            label: "Suspended organizations",
+            value: suspendedCount.toString(),
             detail: "Temporarily restricted",
             icon: Clock3,
             iconClass:
@@ -286,7 +319,7 @@ export default function OrganizationManagementPage() {
           },
           {
             label: "Total members",
-            value: "428",
+            value: totalMembers.toLocaleString(),
             detail: "Across all organizations",
             icon: UsersRound,
             iconClass:
@@ -323,21 +356,22 @@ export default function OrganizationManagementPage() {
         })}
       </section>
 
-      <section
-        aria-labelledby="organizations-heading"
-        className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-white/3"
-      >
-        <div className="flex flex-col gap-4 border-b border-gray-100 px-5 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between dark:border-gray-800">
+      <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-white/3">
+        <div className="flex flex-col gap-4 border-b border-gray-100 px-5 py-5 sm:px-6 xl:flex-row xl:items-center xl:justify-between dark:border-gray-800">
           <div>
-            <h2 id="organizations-heading" className="font-semibold">
-              Organizations
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="font-semibold">Organization directory</h2>
+              <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400">
+                {filteredRows.length}
+              </span>
+            </div>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Browse organizations available to your account.
+              Search, sort, and filter organization records.
             </p>
           </div>
+
           <div className="flex flex-col gap-3 sm:flex-row">
-            <label className="relative block sm:w-64">
+            <label className="relative block sm:w-72">
               <span className="sr-only">Search organizations</span>
               <Search
                 className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-gray-400"
@@ -345,332 +379,78 @@ export default function OrganizationManagementPage() {
               />
               <input
                 type="search"
-                placeholder="Search name or code"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search name, code, description"
                 className="h-10 w-full rounded-lg border border-gray-200 bg-white pr-3 pl-10 text-sm outline-none placeholder:text-gray-400 focus:border-brand-500 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
               />
             </label>
-            <button
-              type="button"
-              className="inline-flex h-10 items-center justify-between gap-6 rounded-lg border border-gray-200 bg-white px-3.5 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-            >
-              All statuses
-              <ChevronDown className="size-4 text-gray-400" aria-hidden="true" />
-            </button>
+            <label className="relative block sm:w-44">
+              <span className="sr-only">Filter by organization status</span>
+              <select
+                value={status}
+                onChange={(event) => setStatus(event.target.value)}
+                className="h-10 w-full appearance-none rounded-lg border border-gray-200 bg-white px-3.5 pr-9 text-sm text-gray-600 outline-none focus:border-brand-500 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+              >
+                <option value="ALL">All statuses</option>
+                <option value="ACTIVE">Active</option>
+                <option value="INACTIVE">Inactive</option>
+                <option value="SUSPENDED">Suspended</option>
+              </select>
+              <ChevronDown
+                className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-gray-400"
+                aria-hidden="true"
+              />
+            </label>
+            {(search || status !== "ALL") && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch("");
+                  setStatus("ALL");
+                }}
+                className="h-10 rounded-lg px-3 text-sm font-medium text-brand-600 transition hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-500/10"
+              >
+                Clear filters
+              </button>
+            )}
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left">
-            <thead className="bg-gray-50/80 text-xs font-medium tracking-wide text-gray-500 uppercase dark:bg-white/3 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="px-5 py-3.5 sm:px-6">
-                  Organization
-                </th>
-                <th scope="col" className="px-4 py-3.5">
-                  Members
-                </th>
-                <th scope="col" className="px-4 py-3.5">
-                  Status
-                </th>
-                <th scope="col" className="px-4 py-3.5">
-                  Last updated
-                </th>
-                <th scope="col" className="px-5 py-3.5 text-right sm:px-6">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {organizations.map((organization) => (
-                <tr
-                  key={organization.code}
-                  className="transition hover:bg-gray-50/70 dark:hover:bg-white/2"
-                >
-                  <td className="px-5 py-4 sm:px-6">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span
-                        className={`flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-semibold ${organization.avatarClass}`}
-                      >
-                        {organization.initials}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">
-                          {organization.name}
-                        </p>
-                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                          {organization.code}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4">
-                    <span className="text-sm font-medium">
-                      {organization.members}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <OrganizationStatusBadge status={organization.status} />
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
-                    {organization.updated}
-                  </td>
-                  <td className="px-5 py-4 text-right sm:px-6">
-                    <button
-                      type="button"
-                      aria-label={`More actions for ${organization.name}`}
-                      className="inline-flex size-9 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/10"
-                    >
-                      <Ellipsis className="size-5" aria-hidden="true" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex flex-col gap-3 border-t border-gray-100 px-5 py-4 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-gray-800 dark:text-gray-400">
-          <span>Showing 4 of 4 organizations</span>
-          <button onClick={ () => router.push("/organization-management/organization-datatable") }>Organization</button>
-          <span>Sample records · No live data loaded</span>
-        </div>
-      </section>
+        <Box sx={{ width: "100%" }}>
+          <DataGrid
+            aria-label="Organizations table"
+            rows={filteredRows}
+            columns={columns}
+            autoHeight
+            disableRowSelectionOnClick
+            pageSizeOptions={[5, 10, 25]}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 5,
+                  page: 0,
+                },
+              },
+            }}
+            sx={dataGridSx}
+            localeText={{
+              noRowsLabel: "No organizations match your filters.",
+            }}
+          />
+        </Box>
 
-      <section
-        aria-label="Selected organization details"
-        className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]"
-      >
-        <div className="space-y-6">
-          <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-white/3">
-            <div className="border-b border-gray-100 px-5 py-4 sm:px-6 dark:border-gray-800">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-sm font-semibold text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300">
-                    NS
-                  </span>
-                  <div>
-                    <p className="text-xs font-medium tracking-wide text-brand-600 uppercase dark:text-brand-400">
-                      Selected organization
-                    </p>
-                    <h2 className="mt-1 font-semibold">Northstar Security</h2>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg border border-gray-200 px-3 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5"
-                >
-                  <Pencil className="size-3.5" aria-hidden="true" />
-                  Edit
-                </button>
-              </div>
-            </div>
-            <div className="grid gap-x-6 gap-y-5 p-5 sm:grid-cols-2 sm:p-6">
-              <div>
-                <p className="text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                  Organization code
-                </p>
-                <p className="mt-1.5 text-sm font-medium">NORTHSTAR</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                  Status
-                </p>
-                <div className="mt-1.5">
-                  <OrganizationStatusBadge status="Active" />
-                </div>
-              </div>
-              <div className="sm:col-span-2">
-                <p className="text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                  Description
-                </p>
-                <p className="mt-1.5 text-sm leading-6 text-gray-600 dark:text-gray-300">
-                  Corporate security and access operations.
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                  Created
-                </p>
-                <p className="mt-1.5 inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                  <CalendarDays
-                    className="size-4 text-gray-400"
-                    aria-hidden="true"
-                  />
-                  Aug 12, 2025
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                  Last updated
-                </p>
-                <p className="mt-1.5 inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                  <Clock3 className="size-4 text-gray-400" aria-hidden="true" />
-                  Today, 9:42 AM
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2 border-t border-gray-100 px-5 py-4 sm:px-6 dark:border-gray-800">
-              <button
-                type="button"
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-gray-200 px-3 text-xs font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5"
-              >
-                <ShieldCheck className="size-4" aria-hidden="true" />
-                Deactivate
-              </button>
-              <button
-                type="button"
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-amber-200 px-3 text-xs font-medium text-amber-700 hover:bg-amber-50 dark:border-amber-500/30 dark:text-amber-400 dark:hover:bg-amber-500/10"
-              >
-                Suspend organization
-              </button>
-            </div>
-          </article>
-
-          <article className="rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-white/3">
-            <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4 sm:px-6 dark:border-gray-800">
-              <div className="flex items-center gap-3">
-                <span className="flex size-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">
-                  <Settings2 className="size-4" aria-hidden="true" />
-                </span>
-                <div>
-                  <h2 className="text-sm font-semibold">
-                    Organization settings
-                  </h2>
-                  <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                    Saved as setting key/value pairs
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                className="text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400"
-              >
-                Edit settings
-              </button>
-            </div>
-            <div className="divide-y divide-gray-100 px-5 sm:px-6 dark:divide-gray-800">
-              {settings.map((setting) => (
-                <div
-                  key={setting.key}
-                  className="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div>
-                    <p className="font-mono text-xs font-medium text-gray-700 dark:text-gray-200">
-                      {setting.key}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      {setting.description}
-                    </p>
-                  </div>
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 sm:text-right dark:text-gray-300">
-                    <Check
-                      className="size-3.5 shrink-0 text-green-600 dark:text-green-400"
-                      aria-hidden="true"
-                    />
-                    {setting.value}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </article>
-        </div>
-
-        <div className="space-y-6">
-          <article className="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs sm:p-6 dark:border-gray-800 dark:bg-white/3">
-            <div className="mb-5 flex items-center justify-between gap-4">
-              <div>
-                <h2 className="font-semibold">Organization statistics</h2>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  Membership and account status breakdown.
-                </p>
-              </div>
-              <UsersRound
-                className="size-5 shrink-0 text-gray-400"
-                aria-hidden="true"
-              />
-            </div>
-            <div className="space-y-5">
-              <StatGroup
-                title="Membership status"
-                description="Organization membership"
-                data={membershipStatistics}
-              />
-              <StatGroup
-                title="User account status"
-                description="User account"
-                data={userStatistics}
-              />
-            </div>
-          </article>
-
-          <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-white/3">
-            <div className="flex flex-col gap-3 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-gray-800">
-              <div>
-                <h2 className="font-semibold">Organization members</h2>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  User contact, verification, and account details.
-                </p>
-              </div>
-              <button
-                type="button"
-                className="inline-flex h-9 items-center justify-center gap-2 self-start rounded-lg border border-gray-200 px-3 text-xs font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 sm:self-auto"
-              >
-                <UsersRound className="size-3.5" aria-hidden="true" />
-                View all members
-              </button>
-            </div>
-            <div className="divide-y divide-gray-100 dark:divide-gray-800">
-              {members.map((member) => (
-                <div
-                  key={member.email}
-                  className="flex flex-col gap-3 px-5 py-4 sm:px-6 md:flex-row md:items-center md:justify-between"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300">
-                      <UserRound
-                        className="size-4"
-                        aria-hidden="true"
-                      />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">
-                        {member.firstName} {member.lastName}
-                      </p>
-                      <p className="mt-1 truncate text-xs text-gray-500 dark:text-gray-400">
-                        @{member.username} · {member.mobile}
-                      </p>
-                      <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-gray-500 dark:text-gray-400">
-                        <Mail
-                          className="size-3.5 shrink-0"
-                          aria-hidden="true"
-                        />
-                        {member.email}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pl-[52px] md:pl-0">
-                    <div className="flex items-center gap-2">
-                      <MemberStatusBadge status={member.status} />
-                      {member.emailVerified && (
-                        <span className="text-[11px] text-green-700 dark:text-green-400">
-                          Verified
-                        </span>
-                      )}
-                    </div>
-                    <span className="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      <Clock3 className="size-3.5" aria-hidden="true" />
-                      {member.lastLogin}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="border-t border-gray-100 px-5 py-3 text-xs text-gray-500 sm:px-6 dark:border-gray-800 dark:text-gray-400">
-              Showing 3 sample members · 284 total
-            </div>
-          </article>
+        <div className="flex flex-col gap-2 border-t border-gray-100 px-5 py-3.5 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-gray-800 dark:text-gray-400">
+          <span>
+            Showing {filteredRows.length} of {organizationRows.length} sample
+            organizations
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <ArrowDownUp className="size-3.5" aria-hidden="true" />
+            Sort columns by selecting a column heading
+          </span>
         </div>
       </section>
     </main>
   );
-
 }

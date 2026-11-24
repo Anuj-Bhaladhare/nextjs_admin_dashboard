@@ -1,15 +1,13 @@
-import {
-  ArrowLeft,
-  Building2,
-  Check,
-  CircleHelp,
-  Clock3,
-  Info,
-  KeyRound,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Building2, Check, CircleHelp, Clock3, Info, KeyRound, ShieldCheck, Sparkles } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { CreateOrganizationBody } from "./types";
+import useCreateOrganization from "./hook";
+
 
 const fieldClassName =
   "mt-2 h-11 w-full rounded-lg border border-gray-200 bg-white px-3.5 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-brand-500 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500";
@@ -36,6 +34,44 @@ const statusOptions = [
 ] as const;
 
 export default function CreateOrganizationPage() {
+
+    const router = useRouter();
+    const [{ CreateOrganization }] = useCreateOrganization()
+    const [ createOrganizationState, setCreateOrganizationState ] = useState<CreateOrganizationBody>({
+      name: "",
+      code: "",
+      description: "",
+      status: "ACTIVE"
+    });
+
+    const createOrganizationHandler = async () => {
+      try {
+        const result = await CreateOrganization(createOrganizationState);
+
+        if (result?.status) {
+          // Reset form
+          setCreateOrganizationState({
+            name: "",
+            code: "",
+            description: "",
+            status: "ACTIVE",
+          });
+
+          // Success notification
+          toast.success(result?.message || "Organization created successfully!");
+
+          // Navigate to organization listing
+          router.push("/organization-management");
+
+        } else {
+          toast.error(result?.message || "Failed to create organization!");
+        }
+      } catch (error) {
+        console.error("Create organization error:", error);
+        toast.error("Something went wrong while creating organization.");
+      }
+    };
+
   return (
     <main className="mx-auto max-w-6xl space-y-6 text-gray-800 dark:text-white/90">
       <header className="space-y-4">
@@ -49,11 +85,8 @@ export default function CreateOrganizationPage() {
         <div>
           <div className="mb-2 flex items-center gap-2 text-sm font-medium text-brand-600 dark:text-brand-400">
             <Building2 className="size-4" aria-hidden="true" />
-            Organization management
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             Create organization
-          </h1>
+          </div>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
             Add an organization workspace and choose its initial access status.
             You can update these details later.
@@ -96,11 +129,19 @@ export default function CreateOrganizationPage() {
                   id="organization-name"
                   name="name"
                   type="text"
+                  value={createOrganizationState.name}
                   required
                   maxLength={200}
                   autoComplete="organization"
                   placeholder="e.g. Northstar Security"
                   className={fieldClassName}
+                  onChange={ (event) => {
+                      setCreateOrganizationState((prev) => ({
+                        ...prev,
+                        name: event.target.value
+                      }))
+                    }
+                  }
                 />
                 <div className="mt-1.5 flex items-center justify-between gap-3 text-xs text-gray-500 dark:text-gray-400">
                   <span>Use the official name your team recognizes.</span>
@@ -127,12 +168,19 @@ export default function CreateOrganizationPage() {
                   id="organization-code"
                   name="code"
                   type="text"
+                  value={createOrganizationState.code}
                   required
                   maxLength={80}
                   autoCapitalize="characters"
                   placeholder="e.g. NORTHSTAR"
                   className={`${fieldClassName} font-mono uppercase`}
                   aria-describedby="organization-code-help"
+                  onChange={ (event) => {
+                    setCreateOrganizationState( (prev) => ({
+                      ...prev,
+                      code: event.target.value
+                    }))
+                  }}
                 />
                 <p
                   id="organization-code-help"
@@ -153,6 +201,13 @@ export default function CreateOrganizationPage() {
                 <textarea
                   id="organization-description"
                   name="description"
+                  value={createOrganizationState.description}
+                  onChange={ (event) => {
+                    setCreateOrganizationState( (prev) => ({
+                      ...prev,
+                      description: event.target.value
+                    }))
+                  }}
                   rows={4}
                   placeholder="Briefly describe this organization and how it will be used."
                   className="mt-2 w-full resize-y rounded-lg border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-brand-500 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500"
@@ -193,9 +248,15 @@ export default function CreateOrganizationPage() {
                     <input
                       type="radio"
                       name="status"
-                      value={option.value}
+                      value={createOrganizationState.status}
                       defaultChecked={option.value === "ACTIVE"}
                       className="sr-only"
+                      onChange={ () => {
+                        setCreateOrganizationState( (prev) => ({
+                          ...prev,
+                          status: option.value
+                        }))
+                      }}
                     />
                     <span className="flex items-center justify-between gap-2">
                       <span className="inline-flex items-center gap-2 text-sm font-semibold">
@@ -237,6 +298,7 @@ export default function CreateOrganizationPage() {
               </Link>
               <button
                 type="button"
+                onClick={ () => createOrganizationHandler() }
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-700"
               >
                 <Building2 className="size-4" aria-hidden="true" />
@@ -322,4 +384,5 @@ export default function CreateOrganizationPage() {
       </div>
     </main>
   );
+
 }

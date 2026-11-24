@@ -3,6 +3,246 @@ import { jsonResponse } from "@/app/api/jsonResponse";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getPostgresPool } from "@/lib/db/client";
 
+/**
+ * @swagger
+ * /api/organizations/{organizationId}/settings:
+ *   parameters:
+ *     - in: path
+ *       name: organizationId
+ *       required: true
+ *       description: UUID of the organization.
+ *       schema:
+ *         type: string
+ *         format: uuid
+ *   get:
+ *     tags:
+ *       - Organizations
+ *     summary: Get organization settings
+ *     description: Returns all settings for the organization. The authenticated user must have active membership in it.
+ *     operationId: getOrganizationSettings
+ *     security:
+ *       - CookieAuth: []
+ *     responses:
+ *       '200':
+ *         description: Organization settings retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Organization settings retrieved successfully
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       organization_id:
+ *                         type: string
+ *                         format: uuid
+ *                       setting_key:
+ *                         type: string
+ *                       setting_value:
+ *                         type: object
+ *                         additionalProperties: true
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *                       updated_at:
+ *                         type: string
+ *                         format: date-time
+ *       '400':
+ *         description: Organization ID is missing.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Organizations id Not Found id Params
+ *       '401':
+ *         description: Authentication is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized.
+ *       '403':
+ *         description: The authenticated user does not have active access to this organization.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: 'Forbidden: user does not have access to this organization.'
+ *       '404':
+ *         description: No settings were found for the organization.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Organization settings are not found.
+ *       '500':
+ *         description: An unexpected server error prevented settings from being retrieved.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ *   put:
+ *     tags:
+ *       - Organizations
+ *     summary: Create or update an organization setting
+ *     description: >
+ *       Creates the setting if its key does not exist, or replaces its value
+ *       if it does. The authenticated user must have active membership in
+ *       the organization.
+ *     operationId: upsertOrganizationSetting
+ *     security:
+ *       - CookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - setting_key
+ *               - setting_value
+ *             properties:
+ *               setting_key:
+ *                 type: string
+ *                 maxLength: 150
+ *                 example: visitor_check_in
+ *               setting_value:
+ *                 type: object
+ *                 additionalProperties: true
+ *                 example:
+ *                   enabled: true
+ *                   require_photo: false
+ *     responses:
+ *       '200':
+ *         description: Organization setting created or updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Organization setting updated successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     organization_id:
+ *                       type: string
+ *                       format: uuid
+ *                     setting_key:
+ *                       type: string
+ *                     setting_value:
+ *                       type: object
+ *                       additionalProperties: true
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
+ *       '400':
+ *         description: Required setting fields are missing or the setting could not be updated.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     - Organization settings payload is incomplete.
+ *                     - Organization setting could not be updated.
+ *       '401':
+ *         description: Authentication is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized.
+ *       '403':
+ *         description: The authenticated user does not have active access to this organization.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: 'Forbidden: user does not have access to this organization.'
+ *       '500':
+ *         description: Invalid JSON body or an unexpected server error prevented the setting from being saved.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
 const pool = getPostgresPool();
 
 interface OrganizationSettings {
