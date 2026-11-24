@@ -121,8 +121,3 @@ export const POST = async (
         );
     }
 };
-
-
-
-Swagger API documentation implementation karo ? 0 bahut important hai 
-in dono ka combination padho -> OpenAPI + Swagger UI
