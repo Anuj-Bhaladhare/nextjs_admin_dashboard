@@ -1,9 +1,10 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
-export const GET = async() => {
+// Temporarily suspend account
+export const POST = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("Temporarily suspend account");
 
     } catch (error) {
         console.error("Login failed:", error);

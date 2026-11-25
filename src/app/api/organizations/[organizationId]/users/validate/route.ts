@@ -1,9 +1,11 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
-export const GET = async() => {
+
+// Validate CSV/Excel user import data
+export const POST = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("Validate CSV/Excel user import data");
 
     } catch (error) {
         console.error("Login failed:", error);

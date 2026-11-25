@@ -1,9 +1,30 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
-export const GET = async() => {
+
+// Upload or replace profile avatar
+export const PUT = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("Upload or replace profile avatar");
+
+    } catch (error) {
+        console.error("Login failed:", error);
+        return jsonResponse(
+            {  
+                status: false, 
+                message: "Internal Server Error",
+            },
+            500
+        );
+    }
+} 
+
+
+// Remove profile avatar
+export const DELETE = async() => {
+    try {
+        
+        console.log("Remove profile avatar");
 
     } catch (error) {
         console.error("Login failed:", error);

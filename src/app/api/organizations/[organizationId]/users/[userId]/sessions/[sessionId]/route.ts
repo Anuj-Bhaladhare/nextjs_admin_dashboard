@@ -1,9 +1,11 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
-export const GET = async() => {
+
+// Revoke a specific session
+export const DELETE = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("Revoke a specific session");
 
     } catch (error) {
         console.error("Login failed:", error);

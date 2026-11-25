@@ -1,9 +1,11 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
+
+// User activity summary
 export const GET = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("User activity summary");
 
     } catch (error) {
         console.error("Login failed:", error);

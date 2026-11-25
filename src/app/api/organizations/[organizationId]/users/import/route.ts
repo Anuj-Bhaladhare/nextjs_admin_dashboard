@@ -1,9 +1,11 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
-export const GET = async() => {
+
+// Initiate bulk import
+export const POST = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("Initiate bulk import");
 
     } catch (error) {
         console.error("Login failed:", error);

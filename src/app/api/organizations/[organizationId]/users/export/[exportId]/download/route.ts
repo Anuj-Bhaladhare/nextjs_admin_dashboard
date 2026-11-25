@@ -1,9 +1,11 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
+
+// Download generated export file
 export const GET = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("Download generated export file");
 
     } catch (error) {
         console.error("Login failed:", error);

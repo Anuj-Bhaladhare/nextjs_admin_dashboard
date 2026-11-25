@@ -1,9 +1,11 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
-export const GET = async() => {
+
+// Send initial account setup email
+export const POST = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("Send initial account setup email");
 
     } catch (error) {
         console.error("Login failed:", error);

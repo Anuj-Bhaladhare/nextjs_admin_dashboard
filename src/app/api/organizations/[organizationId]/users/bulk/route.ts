@@ -1,9 +1,11 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
-export const GET = async() => {
+
+// Create multiple users
+export const POST = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("Create multiple users");
 
     } catch (error) {
         console.error("Login failed:", error);

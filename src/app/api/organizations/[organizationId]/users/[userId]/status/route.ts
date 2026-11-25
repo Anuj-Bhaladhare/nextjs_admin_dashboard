@@ -1,9 +1,10 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
-export const GET = async() => {
+// Change account status
+export const PATCH = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("Change account status");
 
     } catch (error) {
         console.error("Login failed:", error);

@@ -1,9 +1,11 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
+
+// Check account activation status
 export const GET = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("Check account activation status");
 
     } catch (error) {
         console.error("Login failed:", error);

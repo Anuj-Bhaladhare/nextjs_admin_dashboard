@@ -1,9 +1,11 @@
 import { jsonResponse } from "@/app/api/jsonResponse";
 
-export const GET = async() => {
+
+// Unlock a locked account
+export const POST = async() => {
     try {
         
-        console.log("Create a global user");
+        console.log("Unlock a locked account");
 
     } catch (error) {
         console.error("Login failed:", error);
