@@ -2,6 +2,42 @@ import { jsonResponse } from "@/app/api/jsonResponse";
 
 
 // User activity summary
+/**
+ * @swagger
+ * /api/organizations/{organizationId}/users/{userId}/activity:
+ *   get:
+ *     tags:
+ *       - User Management - Organization
+ *     summary: Get user activity summary
+ *     description: Retrieves the activity summary for a user in the organization. Requires ADMIN or SUPER_ADMIN access.
+ *     operationId: getOrganizationUserActivity
+ *     security:
+ *       - CookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: organizationId
+ *         required: true
+ *         description: ID of the organization.
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: ID of the user whose activity is requested.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: User activity retrieved successfully.
+ *       '401':
+ *         description: Authentication is required.
+ *       '403':
+ *         description: The authenticated user does not have permission to access this organization.
+ *       '404':
+ *         description: User not found in the organization.
+ *       '500':
+ *         description: An unexpected server error occurred.
+ */
 export const GET = async() => {
     try {
         

@@ -26,6 +26,91 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
     
 // Get personal profile
+/**
+ * @swagger
+ * /api/users/me/profile:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get the current user's personal profile
+ *     description: Retrieves the personal profile associated with the authenticated user.
+ *     operationId: getMyUserProfile
+ *     security:
+ *       - CookieAuth: []
+ *     responses:
+ *       '200':
+ *         description: User profile retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: User profile retrieved successfully.
+ *                 profile:
+ *                   type: object
+ *                   properties:
+ *                     user_id:
+ *                       type: string
+ *                     display_name:
+ *                       type: [string, 'null']
+ *                     bio:
+ *                       type: [string, 'null']
+ *                     avatar_url:
+ *                       type: [string, 'null']
+ *                     cover_image_url:
+ *                       type: [string, 'null']
+ *                     date_of_birth:
+ *                       type: [string, 'null']
+ *                       format: date
+ *                     gender:
+ *                       type: [string, 'null']
+ *                     alternate_email:
+ *                       type: [string, 'null']
+ *                       format: email
+ *                     alternate_mobile:
+ *                       type: [string, 'null']
+ *                     address_line_1:
+ *                       type: [string, 'null']
+ *                     address_line_2:
+ *                       type: [string, 'null']
+ *                     city:
+ *                       type: [string, 'null']
+ *                     state:
+ *                       type: [string, 'null']
+ *                     country:
+ *                       type: [string, 'null']
+ *                     postal_code:
+ *                       type: [string, 'null']
+ *                     website_url:
+ *                       type: [string, 'null']
+ *                       format: uri
+ *                     linkedin_url:
+ *                       type: [string, 'null']
+ *                       format: uri
+ *                     twitter_url:
+ *                       type: [string, 'null']
+ *                       format: uri
+ *                     timezone:
+ *                       type: string
+ *                     locale:
+ *                       type: string
+ *                     preferences:
+ *                       type: object
+ *                       additionalProperties: true
+ *                     is_public:
+ *                       type: boolean
+ *       '401':
+ *         description: Authentication is required.
+ *       '404':
+ *         description: User profile not found.
+ *       '500':
+ *         description: An unexpected server error occurred.
+ */
 export const GET = async () => {
     try {
         console.log("USER =========> AAAAAAa ")
@@ -61,6 +146,95 @@ export const GET = async () => {
 
 
 // Create/register personal profile
+/**
+ * @swagger
+ * /api/users/me/profile:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Create the current user's personal profile
+ *     description: Creates a personal profile for the authenticated user.
+ *     operationId: createMyUserProfile
+ *     security:
+ *       - CookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               display_name:
+ *                 type: [string, 'null']
+ *               bio:
+ *                 type: [string, 'null']
+ *               avatar_url:
+ *                 type: [string, 'null']
+ *               cover_image_url:
+ *                 type: [string, 'null']
+ *               date_of_birth:
+ *                 type: [string, 'null']
+ *                 format: date
+ *               gender:
+ *                 type: [string, 'null']
+ *               alternate_email:
+ *                 type: [string, 'null']
+ *                 format: email
+ *               alternate_mobile:
+ *                 type: [string, 'null']
+ *               address_line_1:
+ *                 type: [string, 'null']
+ *               address_line_2:
+ *                 type: [string, 'null']
+ *               city:
+ *                 type: [string, 'null']
+ *               state:
+ *                 type: [string, 'null']
+ *               country:
+ *                 type: [string, 'null']
+ *               postal_code:
+ *                 type: [string, 'null']
+ *               website_url:
+ *                 type: [string, 'null']
+ *                 format: uri
+ *               linkedin_url:
+ *                 type: [string, 'null']
+ *                 format: uri
+ *               twitter_url:
+ *                 type: [string, 'null']
+ *                 format: uri
+ *               timezone:
+ *                 type: string
+ *               locale:
+ *                 type: string
+ *               preferences:
+ *                 type: object
+ *                 additionalProperties: true
+ *               is_public:
+ *                 type: boolean
+ *     responses:
+ *       '201':
+ *         description: User profile created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: User profile created.
+ *                 user_id:
+ *                   type: string
+ *       '400':
+ *         description: The request body must be valid JSON and contain a JSON object.
+ *       '401':
+ *         description: Authentication is required.
+ *       '500':
+ *         description: The profile could not be created or an unexpected server error occurred.
+ */
 export const POST = async (request: Request) => {
     try {
         const user = await getCurrentUser();
@@ -126,6 +300,98 @@ export const POST = async (request: Request) => {
 
 
 // Update existing personal profile
+/**
+ * @swagger
+ * /api/users/me/profile:
+ *   patch:
+ *     tags:
+ *       - Users
+ *     summary: Update the current user's personal profile
+ *     description: Updates one or more profile fields for the authenticated user. At least one supported field must be provided.
+ *     operationId: updateMyUserProfile
+ *     security:
+ *       - CookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             minProperties: 1
+ *             properties:
+ *               display_name:
+ *                 type: [string, 'null']
+ *               bio:
+ *                 type: [string, 'null']
+ *               avatar_url:
+ *                 type: [string, 'null']
+ *               cover_image_url:
+ *                 type: [string, 'null']
+ *               date_of_birth:
+ *                 type: [string, 'null']
+ *                 format: date
+ *               gender:
+ *                 type: [string, 'null']
+ *               alternate_email:
+ *                 type: [string, 'null']
+ *                 format: email
+ *               alternate_mobile:
+ *                 type: [string, 'null']
+ *               address_line_1:
+ *                 type: [string, 'null']
+ *               address_line_2:
+ *                 type: [string, 'null']
+ *               city:
+ *                 type: [string, 'null']
+ *               state:
+ *                 type: [string, 'null']
+ *               country:
+ *                 type: [string, 'null']
+ *               postal_code:
+ *                 type: [string, 'null']
+ *               website_url:
+ *                 type: [string, 'null']
+ *                 format: uri
+ *               linkedin_url:
+ *                 type: [string, 'null']
+ *                 format: uri
+ *               twitter_url:
+ *                 type: [string, 'null']
+ *                 format: uri
+ *               timezone:
+ *                 type: string
+ *               locale:
+ *                 type: string
+ *               preferences:
+ *                 type: object
+ *                 additionalProperties: true
+ *               is_public:
+ *                 type: boolean
+ *     responses:
+ *       '200':
+ *         description: User profile updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: User profile updated.
+ *                 user_id:
+ *                   type: string
+ *       '400':
+ *         description: The request body must be valid JSON and contain at least one supported profile field.
+ *       '401':
+ *         description: Authentication is required.
+ *       '404':
+ *         description: User profile not found.
+ *       '500':
+ *         description: An unexpected server error occurred.
+ */
 export const PATCH = async (request: Request) => {
     try {
         const user = await getCurrentUser();
