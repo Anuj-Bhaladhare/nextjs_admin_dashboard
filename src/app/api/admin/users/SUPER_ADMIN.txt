@@ -1,0 +1,17 @@
+10. SUPER_ADMIN — Global User Management APIs
+These endpoints are reserved for SUPER_ADMIN, who has system-wide user access.
+
+#	Method	        ** Endpoint	**                              ** Purpose **
+1	GET	            /admin/users	                            List all system users
+2	POST	        /admin/users	                            Create a global user
+3	GET	            /admin/users/{userId}	                    Get any user globally
+4	PATCH	        /admin/users/{userId}	                    Update any user's basic information
+5	PATCH	        /admin/users/{userId}/status	            Change global account status
+6	DELETE	        /admin/users/{userId}	                    Delete/soft-delete a global user
+7	GET	            /admin/users/{userId}/activation-status	    Check global activation status
+8	POST	        /admin/users/{userId}/password-reset	    Initiate global password reset
+9	GET	            /admin/users/{userId}/sessions	            View sessions globally
+10	DELETE	        /admin/users/{userId}/sessions	            Revoke all global sessions
+11	GET	            /admin/users/{userId}/activity	            View global activity
+12	GET	            /admin/users/{userId}/audit-logs	        View global audit history
+

@@ -31,11 +31,29 @@ const options: swaggerJsdoc.Options = {
       },
       { 
         name: "Users", 
-        description: "User profile and user management" 
+        description:  "Manage user accounts and profiles, including user creation, retrieval, updating, deletion, account status management, and personal information."
       },
       { 
-        name: "Organizations", 
+        name: "Organizations Management", 
         description: "Organization management" 
+      },
+      {
+        name: "User Management - Super Admin",
+        description: `
+          Provides APIs for Super Admins to manage user accounts across
+          the entire platform, including creating, retrieving, updating,
+          activating, deactivating, and deleting users. Supports global
+          user administration and account lifecycle management.
+        `,
+      },
+      {
+        name: "User Management - Organization",
+        description: `
+          Provides APIs for organization administrators to manage users
+          within their assigned organization, including viewing members,
+          managing user information, assigning roles, updating membership
+          status, and controlling organization-level user access.
+        `,
       },
       { 
         name: "Members", 
