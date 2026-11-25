@@ -11,7 +11,7 @@ const [{ getOrganization, createOrganization }] = OrganizationRepository();
  * /api/organizations:
  *   get:
  *     tags:
- *       - Organizations
+ *       - Organizations Management
  *     summary: List organizations
  *     description: Returns all organizations and their member counts.
  *     operationId: listOrganizations
@@ -148,7 +148,7 @@ export const GET = async (): Promise<NextResponse> => {
  * /api/organizations:
  *   post:
  *     tags:
- *       - Organizations
+ *       - Organizations Management
  *     summary: Create an organization
  *     description: Creates an organization and adds the authenticated user as an active member.
  *     operationId: createOrganization

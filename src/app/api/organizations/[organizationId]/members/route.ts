@@ -10,7 +10,7 @@ const pool = getPostgresPool();
  * /api/organizations/{organizationId}/members:
  *   get:
  *     tags:
- *       - Organizations
+ *       - Organizations Management
  *     summary: List organization members
  *     description: Returns active members of the organization. The authenticated user must have active membership in it.
  *     operationId: listOrganizationMembers

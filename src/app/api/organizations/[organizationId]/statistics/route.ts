@@ -8,7 +8,7 @@ import { getPostgresPool } from "@/lib/db/client";
  * /api/organizations/{organizationId}/statistics:
  *   get:
  *     tags:
- *       - Organizations
+ *       - Organizations Management
  *     summary: Get organization membership statistics
  *     description: Returns member and user status counts for the organization. The authenticated user must have active membership in it.
  *     operationId: getOrganizationStatistics

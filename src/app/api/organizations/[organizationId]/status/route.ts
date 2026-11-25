@@ -8,7 +8,7 @@ import { getPostgresPool } from "@/lib/db/client";
  * /api/organizations/{organizationId}/status:
  *   patch:
  *     tags:
- *       - Organizations
+ *       - Organizations Management
  *     summary: Update organization status
  *     description: Updates the status of an organization. The authenticated user must have active membership in it.
  *     operationId: updateOrganizationStatus

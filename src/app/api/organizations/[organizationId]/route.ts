@@ -37,7 +37,7 @@ const ensureOrganizationAccess = async (userId: string, organizationId: string) 
  *         format: uuid
  *   get:
  *     tags:
- *       - Organizations
+ *       - Organizations Management
  *     summary: Get organization details
  *     description: >
  *       Returns organization details for the specified organization. The
@@ -235,7 +235,7 @@ export const GET = async (
  *         format: uuid
  *   patch:
  *     tags:
- *       - Organizations
+ *       - Organizations Management
  *     summary: Update organization details
  *     description: >
  *       Updates one or more organization fields. The authenticated user must
