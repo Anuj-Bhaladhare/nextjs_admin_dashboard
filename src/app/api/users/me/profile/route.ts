@@ -113,14 +113,11 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
  */
 export const GET = async () => {
     try {
-        console.log("USER =========> AAAAAAa ")
 
         const user = await getCurrentUser();
         if (!user) {
             return jsonResponse({ status: false, message: "Unauthorized." }, 401);
         }
-
-        console.log("USER =========> ", user)
 
         const profile = await getUserProfileByUserId(user.id);
         if (!profile) {
