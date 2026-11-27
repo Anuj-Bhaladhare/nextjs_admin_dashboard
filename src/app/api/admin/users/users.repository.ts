@@ -101,3 +101,13 @@ export const getAllUsersList = async ({
         message: "Users retrieved successfully"
     };
 };
+
+
+export const createUser = async () => {
+    try {
+        
+    } catch (error) {
+        throw new Error("Error creating user: " + (error as Error).message);
+    }
+}
+

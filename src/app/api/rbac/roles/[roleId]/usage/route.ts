@@ -5,6 +5,29 @@ import { getPostgresPool } from "@/lib/db/client";
 
 
 // View role usage and dependencies
+/**
+ * @swagger
+ * /api/rbac/roles/{roleId}/usage:
+ *   get:
+ *     tags: [RBAC]
+ *     summary: View role usage and dependencies
+ *     operationId: getRbacRoleUsage
+ *     security:
+ *       - CookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roleId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Role usage and dependencies retrieved successfully.
+ *       '404':
+ *         description: Role not found.
+ *       '500':
+ *         description: Internal server error.
+ */
 export const GET = async () => {
     try {
 

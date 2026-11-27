@@ -5,6 +5,21 @@ import { getPostgresPool } from "@/lib/db/client";
 
 
 // View role-permission matrix
+/**
+ * @swagger
+ * /api/rbac/roles/permission-matrix:
+ *   get:
+ *     tags: [RBAC]
+ *     summary: View the role-permission matrix
+ *     operationId: getRbacRolePermissionMatrix
+ *     security:
+ *       - CookieAuth: []
+ *     responses:
+ *       '200':
+ *         description: Role-permission matrix retrieved successfully.
+ *       '500':
+ *         description: Internal server error.
+ */
 export const GET = async () => {
     try {
 

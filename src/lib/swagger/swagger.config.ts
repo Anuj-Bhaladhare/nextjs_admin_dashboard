@@ -61,7 +61,7 @@ const options: swaggerJsdoc.Options = {
       },
       { 
         name: "RBAC", 
-        description: "Roles, permissions and delegations" 
+        description: "Modules, permissions, roles, permission grants, role inheritance, and delegation management."
       },
       { 
         name: "Health", 
