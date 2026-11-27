@@ -1,0 +1,83 @@
+
+# ------------ rbac.modules ---------------
+1	GET	        /modules	                        List all modules
+2	GET	        /modules/tree	                    Return hierarchical module tree
+3	GET	        /modules/:moduleId	                Get module details
+4	POST	    /modules	                        Create a module
+5	PATCH	    /modules/:moduleId	                Update module metadata
+6	PATCH	    /modules/:moduleId/status	        Activate/deactivate module
+7	GET	        /modules/:moduleId/permissions	    List permissions belonging to a module
+
+
+
+# ------------ rbac.permissions ---------------
+8	GET	        /permissions	                        List permissions
+9	GET	        /permissions/:permissionId	            Get permission details
+10	POST	    /permissions	                        Create permission
+11	PATCH	    /permissions/:permissionId	            Update permission metadata
+12	PATCH	    /permissions/:permissionId/status	    Activate/deactivate permission
+13	GET	        /permissions/:permissionId/roles	    Get roles containing permission
+14	GET	        /permissions/catalog	                Return grouped permission catalog
+
+
+
+
+# ------------ rbac.roles ---------------
+15	GET	        /roles	                                List roles
+16	GET	        /roles/:roleId	                        Get role details
+17	POST	    /roles	                                Create a role
+18	PATCH	    /roles/:roleId	                        Update role metadata
+19	PATCH	    /roles/:roleId/status	                Activate/deactivate role
+20	DELETE	    /roles/:roleId	                        Delete custom role
+21	GET	        /roles/:roleId/permissions	            Get direct permissions
+22	GET	        /roles/:roleId/effective-permissions	Get effective permissions
+23	GET	        /roles/:roleId/users	                View users assigned to role
+24	GET	        /roles/:roleId/delegations	            View delegation rules for role
+25	GET	        /roles/:roleId/summary	                Get complete role summary
+
+
+
+
+# ------------ rbac.role_permissions ---------------
+26	GET	        /roles/:roleId/permissions	                    List assigned permissions
+27	PUT	        /roles/:roleId/permissions	                    Replace the role's permission set
+28	POST	    /roles/:roleId/permissions	                    Add permissions to role
+29	DELETE	    /roles/:roleId/permissions/:permissionId	    Remove one permission
+30	POST	    /roles/:roleId/permissions/validate	            Validate proposed permissions before saving
+
+
+
+
+# ------------ rbac.role_delegations ---------------
+31	GET	        /delegations	                List delegation rules
+32	POST	    /delegations	                Create a delegation rule
+33	GET	        /delegations/:delegationId	    Get delegation detail
+34	PATCH	    /delegations/:delegationId	    Update delegation capabilities
+35	DELETE	    /delegations/:delegationId	    Remove delegation rule
+
+
+
+
+# ------------ rbac.role_permission_grants ---------------
+36	GET	        /permission-grants	                List permission grants
+37	POST	    /permission-grants	                Create a permission grant
+38	GET	        /permission-grants/:grantId	        Get grant detail
+39	DELETE	    /permission-grants/:grantId	        Remove permission grant
+40	POST	    /permission-grants/validate	        Validate permission grant proposal
+
+
+
+
+# ------------ rbac.role_inheritance ---------------
+41	GET	        /role-inheritance	                    List inheritance relationships
+42	POST	    /role-inheritance	                    Create inheritance relationship
+43	GET	        /role-inheritance/:inheritanceId	    Get relationship details
+44	DELETE	    /role-inheritance/:inheritanceId	    Remove inheritance
+45	POST	    /role-inheritance/validate	            Validate inheritance proposal
+
+
+
+H. Role Insights & Dependency APIs
+46	GET	        /roles/:roleId/usage	                View role usage and dependencies
+47	GET	        /permissions/:permissionId/impact	    Analyze permission impact
+48	GET	        /roles/permission-matrix	            View role-permission matrix
